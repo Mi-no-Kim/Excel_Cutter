@@ -1,0 +1,6 @@
+__RESULT/
+map/BulidData*
+__pycache__
+
+*.zip
+ffmpeg.exe
