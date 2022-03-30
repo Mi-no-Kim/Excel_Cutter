@@ -14,9 +14,19 @@ from glob import glob
 # 기본 설정
 temp = "정답 2개 \t[22/02/05 수정]"
 num = 3
+platform = None
+
+
+def rootChanger(root):
+    if platform == "Linux":
+        return root.replace("\\", "/")
+    else:
+        return root
+
 
 def DeleteAllFiles(filePath, ext):
     """파일 전부 삭제"""
+    filePath = rootChanger(filePath)
     if isdir(filePath):
         for file in scandir(filePath):
             if file.path[-len(ext):] == ext:
@@ -183,7 +193,7 @@ class MyDict:
         self.ansidx1 = 6
         self.ansidx2 = 12
 
-    def append(self, appendType, datalist, numberCut):
+    def append(self, appendType, datalist, numberCut=None):
         """
         appendType: Ani(애니), Song(노래)
         """
@@ -202,9 +212,12 @@ class MyDict:
             self.aniDict[d1].hint = makehint(datalist[ansidx])
             self.aniDict[d1].songs = []
 
-            for i in numberCut:
-                self.aniDict[d1].answer.append([str(x) for x in datalist[ansidx:ansidx+i] if x])
-                ansidx += i
+            if numberCut:
+                for i in numberCut:
+                    self.aniDict[d1].answer.append([str(x) for x in datalist[ansidx:ansidx+i] if x])
+                    ansidx += i
+            else:
+                self.songDict[d1].answer.append([str(x) for x in datalist[ansidx:] if x])
 
             for idx, anslist in enumerate(self.aniDict[d1].answer):
                 for ans in anslist:
@@ -236,9 +249,12 @@ class MyDict:
             self.songDict[myD].answer = []
             self.songDict[myD].hint = makehint(datalist[ansidx])
 
-            for i in numberCut:
-                self.songDict[myD].answer.append([str(x) for x in datalist[ansidx:ansidx+i] if x])
-                ansidx += i
+            if numberCut:
+                for i in numberCut:
+                    self.songDict[myD].answer.append([str(x) for x in datalist[ansidx:ansidx+i] if x])
+                    ansidx += i
+            else:
+                self.songDict[d1].answer.append([str(x) for x in datalist[ansidx:] if x])
 
             for idx, anslist in enumerate(self.songDict[myD].answer):
                 for ans in anslist:
@@ -258,7 +274,7 @@ class TxtDict:
     def set_init(self, name, link):
         self.Dict[name] = {}
         self.Dict[name]["text"] = ""
-        self.Dict[name]["link"] = link
+        self.Dict[name]["link"] = rootChanger(link)
         self.Dict[name]["list"] = []
 
     def add_list(self, name, data):
@@ -268,7 +284,7 @@ class TxtDict:
         if name not in self.Dict.keys():
             self.Dict[name] = {}
             self.Dict[name]["text"] = ""
-            self.Dict[name]["link"] = f".\\{name}"
+            self.Dict[name]["link"] = self.rootChanger(f".\\{name}")
         
         self.Dict[name]["text"] += text
 
@@ -306,7 +322,8 @@ class MyType:
         self.UpperSetting = [1, 1, 1]    # Org, Up, Down
         self.SpaceSetting = [1, 1]       # Org, Off
 
-        self.numberCut = []
+        self.songNumberCut = []
+        self.aniNumberCut = []
 
         self.download_failed = []
 
@@ -316,11 +333,11 @@ class MyType:
         self.wavpath = wavpath
         self.txtpath = txtpath
 
-        self.orgpath = self.wavpath + "\\" + "org" + "\\"
-        self.superpath = [x for x in listdir(self.mypath + "\\__RESULT") if isdir(x)]
+        self.orgpath = rootChanger(self.wavpath + "\\" + "org" + "\\")
+        self.superpath = [x for x in listdir(rootChanger(self.mypath + "\\__RESULT")) if isdir(x)]
         self.extList = [".mp3", ".wav", ".m4a", ".mp4", ".MP3", ".WAV", ".M4A", ".MP4"]
-        self.cutmidpath = self.wavpath + "\\" + "cut_saved" + "\\"
-        self.cutpath = self.wavpath + "\\" + "cut" + "\\"
+        self.cutmidpath = rootChanger(self.wavpath + "\\" + "cut_saved" + "\\")
+        self.cutpath = rootChanger(self.wavpath + "\\" + "cut" + "\\")
     
     def YouTubeDownload(self, addr, SongName, idx1, idx2, now, total):
         # 지정 파일명
@@ -355,7 +372,7 @@ class MyType:
             return
         else:
             for sp in self.superpath:
-                spname = sp + "\\" + filename
+                spname = rootChanger(sp + "\\" + filename)
                 if isfile(spname):
                     copy2(spname, filepath)
                     print(f"Copy File: {spname} to {filepath} \t[{SongName}]")
@@ -897,7 +914,7 @@ class MyType:
             self.YouTubeDownload(**in_dict)
 
         if self.download_failed:
-            with open(self.txtpath + "\\" + "다운로드 이슈.txt", "w", encoding="utf-8") as f:
+            with open(rootChanger(self.txtpath + "\\" + "다운로드 이슈.txt"), "w", encoding="utf-8") as f:
                 f.write(f"total failed: {len(self.download_failed)}\n\n")
                 for failed in self.download_failed:
                     f.write(f'[{failed["songname"]}] was failed at [{failed["address"]}]\n')

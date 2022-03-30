@@ -19,30 +19,38 @@ from niconico_dl.video_manager import NicoNicoVideo
 from glob import glob
 from traceback import format_exc
 
+import platform 
+
 
 class MainProgram:
     def __init__(self):
         self.__version = "1.3.0"
+        self.__platform = platform.system()
 
+    def rootChanger(self, root):
+        if self.__platform == "Linux":
+            return root.replace("\\", "/")
+        else:
+            return root
 
     def main(self):
         print(f"Excel Cutter {self.__version} Ver 입니다.")
         self.mypath = dirname(realpath(__file__))
 
-        createFolder(f"{self.mypath}\\__XLSX")
-        createFolder(f"{self.mypath}\\__RESULT")
-        createFolder(f"{self.mypath}\\__Type")
+        createFolder(self.rootChanger(f"{self.mypath}\\__XLSX"))
+        createFolder(self.rootChanger(f"{self.mypath}\\__RESULT"))
+        createFolder(self.rootChanger(f"{self.mypath}\\__Type"))
 
         self.xl_name = input("(확장자 및 경로를 제외한) 대상 파일 이름을 입력해주세요...\n: ")
-        self.filename = f"{self.xl_name}.xlsx"
+        self.filename = self.rootChanger(f"{self.xl_name}.xlsx")
 
-        self.myinputpath = f"{self.mypath}\\__XLSX"
-        self.myoutputpath = f"{self.mypath}\\__RESULT\\{self.xl_name}"
+        self.myinputpath = self.rootChanger(f"{self.mypath}\\__XLSX")
+        self.myoutputpath = self.rootChanger(f"{self.mypath}\\__RESULT\\{self.xl_name}")
 
-        self.txtpath = self.myoutputpath + "\\txt"
-        self.wavpath = self.myoutputpath + "\\wav"
+        self.txtpath = self.rootChanger(self.myoutputpath + "\\txt")
+        self.wavpath = self.rootChanger(self.myoutputpath + "\\wav")
 
-        self.filepath = f"{self.myinputpath}\\{self.filename}"
+        self.filepath = self.rootChanger(f"{self.myinputpath}\\{self.filename}")
 
         # 엑셀
         self.wb = xl.load_workbook(self.filepath, data_only=True)
@@ -52,16 +60,16 @@ class MainProgram:
         createFolder(self.txtpath)
         createFolder(self.wavpath)
 
-        createFolder(self.wavpath + "\\" + "org")
-        createFolder(self.wavpath + "\\" + "cut")
-        createFolder(self.wavpath + "\\" + "cut_saved")
+        createFolder(self.rootChanger(self.wavpath + "\\" + "org"))
+        createFolder(self.rootChanger(self.wavpath + "\\" + "cut"))
+        createFolder(self.rootChanger(self.wavpath + "\\" + "cut_saved"))
 
         self.wantType = -1
         self.typeArr = []
 
         for i in range(1,100):
             pyName = f"Type{i:02}.py"
-            if exists(f"{self.mypath}\\__Type\\" + pyName):
+            if exists(self.rootChanger(f"{self.mypath}\\__Type\\" + pyName)):
                 self.typeArr.append(import_module("__Type." + pyName[:-3]))
 
 
@@ -80,10 +88,11 @@ class MainProgram:
         for idx, num in enumerate([x.num for x in self.typeArr]):
             if self.wantType == num:
                 self.my_type = self.typeArr[idx].MyType()
+                self.typeArr[idx].platform = self.__platform
                 break
 
+        # self.my_type.platform = self.__platform
         self.my_type.insert_defalut_data(self.wb, self.mypath, self.wavpath, self.txtpath)
-
 
         self.my_type.Running()
         print("완료.")

@@ -1,6 +1,10 @@
+# my_pc_setting
 __RESULT/
 map/BulidData*
 __pycache__
 
 *.zip
 ffmpeg.exe
+
+# my_linux_setting
+*_env

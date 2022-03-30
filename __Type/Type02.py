@@ -14,9 +14,19 @@ from glob import glob
 
 temp = "카테고리 사용 \t[22/02/27 수정]"
 num = 2
+platform = None
+
+
+def rootChanger(root):
+    if platform == "Linux":
+        return root.replace("\\", "/")
+    else:
+        return root
+
 
 def DeleteAllFiles(filePath, ext):
     """파일 전부 삭제"""
+    filePath = rootChanger(filePath)
     if isdir(filePath):
         for file in scandir(filePath):
             if file.path[-len(ext):] == ext:
@@ -180,7 +190,7 @@ class MyDict:
         self.cateDict = {}
         self.ansidx = 11
 
-    def append(self, appendType ,datalist, numberCut):
+    def append(self, appendType ,datalist, numberCut=None):
         """
         appendType: Song(노래), Cate(카테고리)
         """
@@ -204,9 +214,12 @@ class MyDict:
             self.songDict[d1].answer = []
             self.songDict[d1].hint = makehint(datalist[ansidx])
 
-            for i in numberCut:
-                self.songDict[d1].answer.append([str(x) for x in datalist[ansidx:ansidx+i] if x])
-                ansidx += i
+            if numberCut:
+                for i in numberCut:
+                    self.songDict[d1].answer.append([str(x) for x in datalist[ansidx:ansidx+i] if x])
+                    ansidx += i
+            else:
+                self.songDict[d1].answer.append([str(x) for x in datalist[ansidx:] if x])
 
             for idx, anslist in enumerate(self.songDict[d1].answer):
                 for ans in anslist:
@@ -237,7 +250,7 @@ class TxtDict:
     def set_init(self, name, link):
         self.Dict[name] = {}
         self.Dict[name]["text"] = ""
-        self.Dict[name]["link"] = link
+        self.Dict[name]["link"] = rootChanger(link)
         self.Dict[name]["list"] = []
 
     def add_list(self, name, data):
@@ -247,7 +260,7 @@ class TxtDict:
         if name not in self.Dict.keys():
             self.Dict[name] = {}
             self.Dict[name]["text"] = ""
-            self.Dict[name]["link"] = f".\\{name}"
+            self.Dict[name]["link"] = rootChanger(f".\\{name}")
         
         self.Dict[name]["text"] += text
 
@@ -288,11 +301,11 @@ class MyType:
         self.wavpath = wavpath
         self.txtpath = txtpath
 
-        self.orgpath = self.wavpath + "\\" + "org" + "\\"
-        self.superpath = [x for x in listdir(self.mypath + "\\__RESULT") if isdir(x)]
+        self.orgpath = rootChanger(self.wavpath + "\\" + "org" + "\\")
+        self.superpath = [x for x in listdir(rootChanger(self.mypath + "\\__RESULT")) if isdir(x)]
         self.extList = [".mp3", ".wav", ".m4a", ".mp4", ".MP3", ".WAV", ".M4A", ".MP4"]
-        self.cutmidpath = self.wavpath + "\\" + "cut_saved" + "\\"
-        self.cutpath = self.wavpath + "\\" + "cut" + "\\"
+        self.cutmidpath = rootChanger(self.wavpath + "\\" + "cut_saved" + "\\")
+        self.cutpath = rootChanger(self.wavpath + "\\" + "cut" + "\\")
     
     def YouTubeDownload(self, addr, SongName, idx, total):
         # 지정 파일명
@@ -327,7 +340,7 @@ class MyType:
             return
         else:
             for sp in self.superpath:
-                spname = sp + "\\" + filename
+                spname = rootChanger(sp + "\\" + filename)
                 if isfile(spname):
                     copy2(spname, filepath)
                     print(f"Copy File: {spname} to {filepath} \t[{SongName}]")
@@ -580,7 +593,7 @@ class MyType:
                     self.TriggerDict[key[0]] = []
                 self.TriggerDict[key[0]] += [val]
 
-        self.TxtDict.set_init("DupleTxt", self.txtpath + "\\" + "!중복 여부 확인용.txt")
+        self.TxtDict.set_init("DupleTxt", rootChanger(self.txtpath + "\\" + "!중복 여부 확인용.txt"))
         for key, val in self.ErrMSG.items():
             self.TxtDict.add_text("DupleTxt", f"{key}\n: {val}\n")
 
@@ -590,7 +603,7 @@ class MyType:
             input()
             exit()
 
-        self.TxtDict.set_init("TriggerTxt", self.txtpath + "\\" + "정답 트리거.txt")
+        self.TxtDict.set_init("TriggerTxt", rootChanger(self.txtpath + "\\" + "정답 트리거.txt"))
         self.TxtDict.add_text("TriggerTxt", "[chatEvent]\n__addr__: 0x58D900\n")
 
         for key in sorted(self.TriggerDict.keys()):
@@ -622,27 +635,27 @@ class MyType:
         if not key10000:
             key10000 = [0]
 
-        self.TxtDict.set_init("Key10000Txt", self.txtpath + "\\" + "Key10000.txt")
+        self.TxtDict.set_init("Key10000Txt", rootChanger(self.txtpath + "\\" + "Key10000.txt"))
         self.TxtDict.add_text("Key10000Txt", str(key10000L) + "\n\n")
         self.TxtDict.add_text("Key10000Txt", str(key10000))
 
-        self.TxtDict.set_init("Song1Txt", self.txtpath + "\\" + "노래 정보 1.txt")
-        self.TxtDict.set_init("Song2Txt", self.txtpath + "\\" + "노래 정보 2.txt")
-        self.TxtDict.set_init("Song3Txt", self.txtpath + "\\" + "노래 정보 3.txt")
-        self.TxtDict.set_init("Song4Txt", self.txtpath + "\\" + "노래 정보 4.txt")
-        self.TxtDict.set_init("Song5Txt", self.txtpath + "\\" + "노래 정보 5.txt")
+        self.TxtDict.set_init("Song1Txt", rootChanger(self.txtpath + "\\" + "노래 정보 1.txt"))
+        self.TxtDict.set_init("Song2Txt", rootChanger(self.txtpath + "\\" + "노래 정보 2.txt"))
+        self.TxtDict.set_init("Song3Txt", rootChanger(self.txtpath + "\\" + "노래 정보 3.txt"))
+        self.TxtDict.set_init("Song4Txt", rootChanger(self.txtpath + "\\" + "노래 정보 4.txt"))
+        self.TxtDict.set_init("Song5Txt", rootChanger(self.txtpath + "\\" + "노래 정보 5.txt"))
 
-        self.TxtDict.set_init("LengthTxt", self.txtpath + "\\" + "노래 길이.txt")
+        self.TxtDict.set_init("LengthTxt", rootChanger(self.txtpath + "\\" + "노래 길이.txt"))
 
-        self.TxtDict.set_init("Hint1Txt", self.txtpath + "\\" + "초성 - 1 번째.txt")
-        self.TxtDict.set_init("Hint2Txt", self.txtpath + "\\" + "초성 - 2 번째.txt")
-        self.TxtDict.set_init("Hint3Txt", self.txtpath + "\\" + "초성 - 3 번째.txt")
+        self.TxtDict.set_init("Hint1Txt", rootChanger(self.txtpath + "\\" + "초성 - 1 번째.txt"))
+        self.TxtDict.set_init("Hint2Txt", rootChanger(self.txtpath + "\\" + "초성 - 2 번째.txt"))
+        self.TxtDict.set_init("Hint3Txt", rootChanger(self.txtpath + "\\" + "초성 - 3 번째.txt"))
 
-        self.TxtDict.set_init("SongAnswerTxt", self.txtpath + "\\" + "정답 시 (노래정보 1 & 2 합진 것).txt")
+        self.TxtDict.set_init("SongAnswerTxt", rootChanger(self.txtpath + "\\" + "정답 시 (노래정보 1 & 2 합진 것).txt"))
 
-        self.TxtDict.set_init("CateListTxt", self.txtpath + "\\" + "카테고리 할당.txt")
-        self.TxtDict.set_init("CateNameTxt", self.txtpath + "\\" + "카테고리 이름.txt")
-        self.TxtDict.set_init("CateLengthTxt", self.txtpath + "\\" + "카테고리 길이.txt")
+        self.TxtDict.set_init("CateListTxt", rootChanger(self.txtpath + "\\" + "카테고리 할당.txt"))
+        self.TxtDict.set_init("CateNameTxt", rootChanger(self.txtpath + "\\" + "카테고리 이름.txt"))
+        self.TxtDict.set_init("CateLengthTxt", rootChanger(self.txtpath + "\\" + "카테고리 길이.txt"))
 
         self.keylist = sorted(self.MyDict.songDict.keys())
 
@@ -776,7 +789,7 @@ class MyType:
             self.YouTubeDownload(**in_dict)
 
         if self.download_failed:
-            with open(self.txtpath + "\\" + "다운로드 이슈.txt", "w", encoding="utf-8") as f:
+            with open(rootChanger(self.txtpath + "\\" + "다운로드 이슈.txt"), "w", encoding="utf-8") as f:
                 f.write(f"total failed: {len(self.download_failed)}\n\n")
                 for failed in self.download_failed:
                     f.write(f'[{failed["songname"]}] was failed at [{failed["address"]}]\n')
@@ -784,7 +797,7 @@ class MyType:
             return
 
         idx = 0
-        print(DeleteAllFiles(self.wavpath + "\\cut", ".wav"))
+        print(DeleteAllFiles(rootChanger(self.wavpath + "\\cut"), ".wav"))
 
         for elememtKey in sorted(self.MyDict.songDict.keys()):
             song = self.MyDict.songDict[elememtKey]
