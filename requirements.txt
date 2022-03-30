@@ -1,0 +1,15 @@
+#requirements.txt
+
+ffmpeg==1.4
+ffmpeg-python==0.2.0
+importlib==1.0.4
+librosa==0.8.0
+matplotlib==3.4.2
+niconico-dl==1.1.2
+numpy==1.18.5
+openpyxl==3.0.7
+pyloudnorm==0.1.0
+scipy==1.4.1
+SoundFile==0.10.3.post1
+youtube-dl==2021.6.6
+yt-dlp==2021.12.27
