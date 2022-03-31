@@ -8,3 +8,6 @@ ffmpeg.exe
 
 # my_linux_setting
 *_env
+
+#excel ~$
+*/~$*.xlsx

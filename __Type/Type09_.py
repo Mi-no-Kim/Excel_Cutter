@@ -229,6 +229,7 @@ class MyDict:
     Scount = 0
     def __init__(self):
         self.songDict = {}
+        self.typeDict = {}
         self.ansidx = 14
 
     def append(self, appendType, datalist, numberCut=None):
@@ -262,6 +263,11 @@ class MyDict:
             self.songDict[myD].lyrics.show_lyrics_answer = []
             lyrics_split = [x.split(" / ") for x in lyrics_org[:self.songDict[myD].lyrics.lyrics_length] if x]
         
+            typeKey = self.songDict[myD].basic_info[4]
+            if self.typeDict.get(typeKey) == None:
+                self.typeDict[typeKey] = []
+            self.typeDict[typeKey].append()
+
             idx4 = 0
             idx5 = -2
 
@@ -375,7 +381,11 @@ class TxtDict:
                 if self.Dict[name]["text"]:        
                     f.write(self.Dict[name]["text"])
                 else:
-                    f.write(str(self.Dict[name]["list"])[1:-1])
+                    if isinstance(self.Dict[name]["list"][0], str):
+                        for li in self.Dict[name]["list"]:
+                            f.write(str(li) + ",\n")
+                    else:
+                        f.write(str(self.Dict[name]["list"])[1:-1])
 
 
 class MyType:
@@ -631,10 +641,11 @@ class MyType:
 
     def MakeTxt(self):
         self.TriggerDict = {}
-        newdx = 20000
+        self.KeyDict = {}
+        newdx = 2000
 
-        self.key20000keys = []
-        self.key20000vals = []
+        self.key2000List = []
+        self.key2000Length = [0]
 
         self.DupleDict = {}
 
@@ -649,91 +660,91 @@ class MyType:
 
         for val in self.MyDict.AnswerDict.keys():
             key = self.MyDict.AnswerDict[val]
-            for v in key:
-                if key.count(v) > 1:
-                    if val not in self.ErrMSG["SingleLine"]:
-                        self.ErrMSG["SingleLine"].append(val)
+            key2 = [x//1000 for x in key]
+
+            for v in key2:
+                if key2.count(v) > 1:
+                    if f"{val}:{v-50+3}" not in self.ErrMSG["SingleLine"]:
+                        self.ErrMSG["SingleLine"].append(f"{val}:{v-50+3}")
 
             if len(key) > 1:
                 if val not in self.ErrMSG["MultiLine"]:
                     self.ErrMSG["MultiLine"].append(val)
-                if str(key) not in self.DupleDict.keys():
-                    self.DupleDict[str(key)] = []
-                self.DupleDict[str(key)] += [val]
+
+                self.TriggerDict[newdx] = [val]
+
+                for v in key:
+                    self.KeyDict[v] = newdx
+
+                self.key2000List += key
+                self.key2000Length += [self.key2000Length[-1] + len(key)]
+
+                newdx += 1
             else:
                 if key[0] not in self.TriggerDict:
                     self.TriggerDict[key[0]] = []
                 self.TriggerDict[key[0]] += [val]
 
+                if key[0] not in self.TriggerDict:
+                    self.TriggerDict[key[0]] = []
+                self.TriggerDict[key[0]] += [val]
+
+                self.KeyDict[key[0]] = key[0]
+
         self.TxtDict.set_init("DupleTxt", self.txtpath + "\\" + "!중복 여부 확인용.txt")
         for key, val in self.ErrMSG.items():
+            if key == "SingleLine":
+                val.sort(key = lambda x: (int(x.split(":")[-1]), x))
             self.TxtDict.add_text("DupleTxt", f"{key}\n: {val}\n")
 
         if self.ErrMSG["SingleLine"]:
             print("한 줄에서, 같은 정답이 2개 이상 사용되었습니다.")
             print("종료합니다...")
+            self.TxtDict.write_text()
             input()
             exit()
 
-        self.TxtDict.set_init("TriggerTxt", self.txtpath + "\\" + "정답 트리거.txt")
+        self.TxtDict.set_init("Key2000Txt", self.txtpath + "\\" + "key2000List.txt")
+        self.TxtDict.set_init("Key2000LenTxt", self.txtpath + "\\" + "key2000Length.txt")
+
+        idx = 0
+        limit_len = len(self.key2000List)
+        while idx < limit_len:
+            if idx+100 >= limit_len:
+                self.TxtDict.add_text("Key2000Txt", str(self.key2000List[idx:])[1:-1]+",\n")
+            self.TxtDict.add_text("Key2000Txt", str(self.key2000List[idx:idx+100])[1:-1]+",\n")
+            idx += 100
+
+        idx = 0
+        limit_len = len(self.key2000Length)
+        while idx < limit_len:
+            if idx+100 >= limit_len:
+                self.TxtDict.add_text("Key2000LenTxt", str(self.key2000Length[idx:])[1:-1]+",\n")
+            self.TxtDict.add_text("Key2000LenTxt", str(self.key2000Length[idx:idx+100])[1:-1]+",\n")
+            idx += 100
+
+        self.TxtDict.set_init("TriggerTxt", self.txtpath + "\\" + "Lyric 정답 트리거.txt")
         self.TxtDict.add_text("TriggerTxt", "[chatEvent]\n__addr__: 0x58D900\n")
 
+        check_key = 50000 // 250
+
+        mykeys = [x//100 for x in sorted(self.TriggerDict.keys())]
+        mykeys = list(set(mykeys))
+
         for key in sorted(self.TriggerDict.keys()):
-            if 2000 <= key < 20000:
-                self.TxtDict.add_text("TriggerTxt", "\n")
-                
             for val in self.TriggerDict[key]:
-                self.TxtDict.add_text("TriggerTxt", f"{val}: {key}\n")
-
-        self.TxtDict.add_text("TriggerTxt", "\n")
-
-        for key in self.DupleDict.keys():
-            DpKeyList = sorted([int(x) for x in key[1:-1].split(", ")])
-
-            self.key20000keys.append(newdx)
-            self.key20000vals.append(DpKeyList)
-
-            for val in self.DupleDict[key]:
-                self.TxtDict.add_text("TriggerTxt", f"{val}: {newdx}\n")
-
-            newdx += 1   
-
-        key20000L = [0]
-        key20000 = []
-        for v in self.key20000vals:
-            key20000L += [key20000L[-1] + len(v)]
-            key20000 += v
-
-        if not key20000:
-            key20000 = [0]
-
-        self.TxtDict.set_init("Key20000Txt", self.txtpath + "\\" + "Key20000.txt")
-
-
-        self.TxtDict.set_init("Ani1Txt", self.txtpath + "\\" + "애니 정보 1.txt")
-        self.TxtDict.set_init("Ani2Txt", self.txtpath + "\\" + "애니 정보 2.txt")
-        self.TxtDict.set_init("Ani3Txt", self.txtpath + "\\" + "애니 정보 3.txt")
-        self.TxtDict.set_init("Ani4Txt", self.txtpath + "\\" + "애니 정보 4.txt")
-        self.TxtDict.set_init("Ani5Txt", self.txtpath + "\\" + "애니 정보 5.txt")
-
-        self.TxtDict.set_init("AniHint1Txt", self.txtpath + "\\" + "애니 초성 - 1 번째.txt")
-        self.TxtDict.set_init("AniHint2Txt", self.txtpath + "\\" + "애니 초성 - 2 번째.txt")
-        self.TxtDict.set_init("AniHint3Txt", self.txtpath + "\\" + "애니 초성 - 3 번째.txt")
-
-        self.TxtDict.set_init("AniAnswerTxt", self.txtpath + "\\" + "애니 정답 시 (노래정보 1 & 2 합진 것).txt")
-
-        self.TxtDict.set_init("AnitoSongListTxt", self.txtpath + "\\" + "애니→노래 할당.txt")
-        self.TxtDict.set_init("AnitoSongLengthTxt", self.txtpath + "\\" + "애니→노래 길이.txt")
-
-        self.TxtDict.set_init("Key20000Txt", self.txtpath + "\\" + "Key20000.txt")
-        self.TxtDict.add_text("Key20000Txt", str(key20000L) + "\n\n")
-        self.TxtDict.add_text("Key20000Txt", str(key20000))
+                if (check_key != (key // 250)) and (key >= 50000):
+                    check_key = key // 250
+                    self.TxtDict.add_text("TriggerTxt", "\n")
+                self.TxtDict.add_text(f"{val}: {key}\n") 
 
         self.TxtDict.set_init("Song1Txt", self.txtpath + "\\" + "노래 정보 1.txt")
         self.TxtDict.set_init("Song2Txt", self.txtpath + "\\" + "노래 정보 2.txt")
         self.TxtDict.set_init("Song3Txt", self.txtpath + "\\" + "노래 정보 3.txt")
         self.TxtDict.set_init("Song4Txt", self.txtpath + "\\" + "노래 정보 4.txt")
         self.TxtDict.set_init("Song5Txt", self.txtpath + "\\" + "노래 정보 5.txt")
+        self.TxtDict.set_init("Song6Txt", self.txtpath + "\\" + "노래 정보 6.txt")
+        self.TxtDict.set_init("Song7Txt", self.txtpath + "\\" + "노래 정보 7.txt")
 
         self.TxtDict.set_init("LengthTxt", self.txtpath + "\\" + "노래 길이.txt")
 
@@ -743,81 +754,6 @@ class MyType:
 
         self.TxtDict.set_init("SongAnswerTxt", self.txtpath + "\\" + "노래 정답 시 (노래정보 1 & 2 합진 것).txt")
 
-
-        self.keylist = sorted(self.MyDict.aniDict.keys())
-        self.TxtDict.add_list("AnitoSongListTxt", 0)
-        for key in self.keylist:
-            ASDF = self.MyDict.aniDict[key]
-
-            vals = ASDF.basic_info
-            val = vals[0]
-            if vals[1] and vals[0] != vals[1]:
-                val = f"{val}({vals[1]})"
-
-            if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(val)
-            self.TxtDict.add_text("AniAnswerTxt", str(mytext))
-
-            val = vals[0]
-            if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(val)
-            self.TxtDict.add_text("Ani1Txt", str(mytext))
-
-            val = vals[1]
-            if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(val)
-            self.TxtDict.add_text("Ani2Txt", str(mytext))
-
-            val = vals[2]
-            if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(val)
-            self.TxtDict.add_text("Ani3Txt", str(mytext))
-
-            val = vals[3]
-            if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(val)
-            self.TxtDict.add_text("Ani4Txt", str(mytext))
-
-            val = vals[4]
-            if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(val)
-            self.TxtDict.add_text("Ani5Txt", str(mytext))
-
-            vals = ASDF.hint
-
-            if "'" in vals[0]:
-                mytext = 'Db("{}"), '.format(vals[0].replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(vals[0])
-            self.TxtDict.add_text("AniHint1Txt", str(mytext))
-
-            if "'" in vals[1]:
-                mytext = 'Db("{}"), '.format(vals[1].replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(vals[1])
-            self.TxtDict.add_text("AniHint2Txt", str(mytext))
-
-            if "'" in vals[2]:
-                mytext = 'Db("{}"), '.format(vals[2].replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(vals[2])
-            self.TxtDict.add_text("AniHint3Txt", str(mytext))
-
-            val = ASDF.songs
-            self.TxtDict.add_list("AnitoSongLengthTxt", self.TxtDict.return_list("AnitoSongListTxt", -1) + len(val))
-            self.TxtDict.add_text("AnitoSongListTxt", f'[{", ".join(map(str, val))}], ')
 
         self.keylist = sorted(self.MyDict.songDict.keys())
         for key in self.keylist:

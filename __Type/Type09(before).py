@@ -538,7 +538,7 @@ def MakeTxt():
     TriggerDict = {}
 
     key2000List = []
-    key2000Lenght = [0]
+    key2000Length = [0]
 
     DupleDict = {}
 
@@ -570,7 +570,7 @@ def MakeTxt():
                 KeyDict[v] = newdx
 
             key2000List += key
-            key2000Lenght += [key2000Lenght[-1] + len(key)]
+            key2000Length += [key2000Length[-1] + len(key)]
             
             newdx += 1
         
@@ -600,12 +600,12 @@ def MakeTxt():
     LyricTriggerTxt.write("[chatEvent]\n__addr__: 0x58D900\n")
 
     Key2000 = open(txtpath + "\\" + "key2000List.txt", "w", encoding="utf-8")
-    Key2000Len = open(txtpath + "\\" + "key2000Lenght.txt", "w", encoding="utf-8")
+    Key2000Len = open(txtpath + "\\" + "key2000Length.txt", "w", encoding="utf-8")
 
     Key2000.write(str(key2000List))
     Key2000.close()
 
-    Key2000Len.write(str(key2000Lenght))
+    Key2000Len.write(str(key2000Length))
     Key2000Len.close()
 
     LyricArrowTxt = open(txtpath + "\\" + "Lyric Arrow.txt", "w", encoding="utf-8")
