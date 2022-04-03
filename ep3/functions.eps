@@ -1,0 +1,170 @@
+import MusicSetting as ms;
+import musicPlay as mp;
+import ....musicConfig;
+
+const s = StringBuffer(1024);
+const mouseLoc = $L("P1");
+const mX = PVariable();
+const mY = PVariable();
+var MouseUse = 0;
+var superUser = 0;
+
+function SingleBan(){
+	const a = 0x6D0F48; //방이름
+	const b = 0x6D0F78; //방장닉
+	const c = Db("");
+	if(strcmp(a, b) == 0){
+		foreach(cp : EUDLoopPlayer('Human', None, None)){
+			setcurpl(cp);
+			s.print("\x13\x1EUDP 플레이는 금지하고 있습니다.\n\x13\x04만약 방제가 방장닉네임일 경우 플레이가 불가능하니 다른 방제로 설정해주세요.");
+			Defeat();
+		}
+	}
+	else if(strcmp(b, c) == 0){
+		foreach(cp : EUDLoopPlayer('Human', None, None)){
+			setcurpl(cp);
+			s.print("\x13\x1E싱글 플레이는 금지하고 있습니다.");
+			Defeat();
+		}
+	}
+	for(var i=0; i<7; i++){
+		const d = 0x57EEEB + 36 * i;
+		if(strcmp(b, d) == 0){superUser = i; break;}
+	}
+}
+
+function SpeedBan(){
+	const a = dwread_epd_safe(EPD(0x51CE84));
+	const b = dwread_epd_safe(EPD(0x51CE88));
+	if(a == 1000){if(b == 1000) return;}		//턴레이트24
+	else if(a == 1042){if(b == 1190) return;}	//턴레이트20
+	else if(a == 1302){if(b == 1488) return;}	//턴레이트16
+	else if(a == 1488){if(b == 1701) return;}	//턴레이트14
+	else if(a == 1736){if(b == 1984) return;}	//턴레이트12
+	else if(a == 2083){if(b == 2381) return;}	//턴레이트10
+	else if(a == 2604){if(b == 2976) return;}	//턴레이트8
+	else{
+		foreach(cp : EUDLoopPlayer('Human', None, None)){
+			setcurpl(cp);
+			s.print("\x13\x1E배속 플레이는 금지하고 있습니다.");
+			Defeat();
+		}
+	}
+}
+
+function playerKick(){
+	for(var i=0; i<7; i++){
+		const j = i+1000;
+		if(Deaths(superUser, Exactly, j, ms.ANSWER)){
+			if(Command(i, Exactly, 1, 215)){
+				if(superUser != i){
+					foreach(p : EUDLoopPlayer('Human', None, None)){
+						setcurpl(p); s.print("\x1F■ ", PColor(superUser), PName(superUser),"\x04님께서 ", PColor(i), PName(i), "\x04님을 강퇴하셨습니다.");
+						SetDeaths(p, SetTo, 4, ms.EFFECT);
+					}
+					setcurpl(i); s.print("\x08■ \x04강퇴당하셨습니다."); Defeat();
+				}
+			}
+		}
+	}
+}
+
+function mouseInit(){
+	EUDRegisterObjectToNamespace("Mo", MouseUse);
+}
+
+function mouseSwitch(a){
+	MouseUse = a;
+}
+
+function mouseTrack(cp){
+	const a = EPD(0x58DC4C) + (mouseLoc+cp)*5;
+	mX[cp] = dwread_epd(a+0);
+	mY[cp] = dwread_epd(a+1);
+}
+function GetDeath(player, unit:TrgUnit) {
+    return dwread_epd(EPD(0x58A364 + 48 * unit + 4 * player));
+    // TrgUnit - "Terran Marine"을 0으로 치환, 없으면 유닛 번호로 써야 함
+}
+
+function SetLocation(Location ,x ,y, len) {
+	const loc = EPD(0x58DC4C) + Location * 5;
+	SetMemoryEPD(loc+0, SetTo, x-len);
+	SetMemoryEPD(loc+2, SetTo, x+len);
+	SetMemoryEPD(loc+1, SetTo, y-len);
+	SetMemoryEPD(loc+3, SetTo, y+len);
+}
+
+function EUDMoveLocation(Location, X, Y){
+	const loc = EPD(0x58DC4C) + Location * 5;
+	SetMemoryEPD(loc, Add, X);
+	SetMemoryEPD(loc+2, Add, X);
+	SetMemoryEPD(loc+1, Add, -Y);
+	SetMemoryEPD(loc+3, Add, -Y);
+}
+
+function PlayerInit(){
+    RunAIScript("Turn ON Shared Vision for Player 8");
+    SetAllianceStatus(P8, 1);
+}
+
+function checkDebug(){
+	const mn = ms.MusicNumber; //음악갯수
+	const hint1_len = ms.MusicHint1._arrlen;
+	const hint2_len = ms.MusicHint2._arrlen;
+	const ml_len = ms.MusicLength._arrlen;
+	const ma_len = ms.MusicAnswer._arrlen;
+	if(mn == hint1_len && mn == hint2_len && mn == ml_len && mn == ma_len){
+		foreach(cp : EUDLoopPlayer("Human")){
+			setcurpl(cp);
+			eprintln("\x1ESetting Complete");
+		}
+	}
+	else{
+		foreach(cp : EUDLoopPlayer("Human")){
+			setcurpl(cp);
+			s.printf("\x13\x08！ \x04배열의 길이가 일치하지 않습니다. 곡수와 힌트, 음악길이, 정답의 갯수가 일치하게 수정해주세요.");
+			eprintln("\x1D디버그정보 \x1EMusicNumber:",mn,"개  MusicHint1:",hint1_len,"개  MusicHint2:",hint2_len,"개 MusicLength:",ml_len,"개  MusicAnswer:",ma_len,"개");
+			Defeat();
+		}
+	}
+	if(ms.MusicShort == 1){
+		if(ms.ShortTimer < ms.MusicStart){
+			foreach(cp : EUDLoopPlayer("Human")){
+				setcurpl(cp);
+				s.printf("\x13\x08！ \x04ShortTimer가 MusicStart값보다 작습니다.");
+				Defeat();
+			}
+		}
+	}
+	if(ms.MusicSelect == 1){
+		if(ms.MusicNumber < ms.musicNum1){
+			foreach(cp : EUDLoopPlayer("Human")){
+				setcurpl(cp);
+				s.printf("\x13\x08！ \x04musicNum1가 MusicNumber값보다 높으면 안됩니다.");
+				Defeat();
+			}
+		}
+		if(ms.MusicNumber < ms.musicNum2){
+			foreach(cp : EUDLoopPlayer("Human")){
+				setcurpl(cp);
+				s.printf("\x13\x08！ \x04musicNum2가 MusicNumber값보다 높으면 안됩니다.");
+				Defeat();
+			}
+		}
+		if(ms.MusicNumber < ms.musicNum3){
+			foreach(cp : EUDLoopPlayer("Human")){
+				setcurpl(cp);
+				s.printf("\x13\x08！ \x04musicNum3가 MusicNumber값보다 높으면 안됩니다.");
+				Defeat();
+			}
+		}
+		if(ms.MusicNumber < ms.musicNum4){
+			foreach(cp : EUDLoopPlayer("Human")){
+				setcurpl(cp);
+				s.printf("\x13\x08！ \x04musicNum4가 MusicNumber값보다 높으면 안됩니다.");
+				Defeat();
+			}
+		}
+	}
+}

@@ -1,0 +1,269 @@
+import musicPlay as mp;
+import TriggerEditor.BGMPlayer as BGM;
+import MusicSetting as ms;
+import System as sys;
+import functions as fc;
+
+const s = StringBuffer(1024);
+const opening		= PVariable();
+const TextUpdate	= PVariable();
+const onoffText1		= [Db("\x04[\x07공개\x04/비공개]"), Db("\x04[공개/\x08비공개\x04]")];
+const onoffText2		= [Db("\x04[\x07허용\x04/비허용]"), Db("\x04[허용/\x08비허용\x04]")];
+const onoffText3		= [Db("\x04[\x07사용\x04/미사용]"), Db("\x04[사용/\x08미사용\x04]")];
+
+//=========================세팅 기본값================================================
+//여기는 건드리지 마세요.
+var setting1			= 0; //음악정답
+var setting2			= 0; //스킵기능
+var setting3			= 0; //장르힌트
+var setting4			= 0; //초성힌트
+var setting5			= 1; //짧게듣기
+
+//===================옵션 이름을 바꾸고 싶을 땐 여기서 수정해주세요 !!!=============================
+const settingName1	= Db("음악정답"); //설정1의 설정이름값
+const settingName2	= Db("스킵기능"); //설정2의 설정이름값
+const settingName3 = Db("장르힌트"); //설정3의 설정이름값
+const settingName4 = Db("초성힌트"); //설정4의 설정이름값
+const settingName5 = Db("짧게듣기"); //설정5의 설정이름값
+//=================================================================================
+
+// 0 ~ 36(1초): 파일 불러오기
+// 37 ~ 216(5초): op
+// 217 ~ 251(1초): 설명
+// 252: 버튼 누르기
+// 253 ~ 287(1초): 곡수 설정
+// 288: 버튼 누르기
+// 289 ~ 323(1초): 기본 설정
+// 324: 버튼 누르기 → 3601으로 이동
+// 3601 ~ 3635(1초): DEBUG 확인 질문
+// 3636: 버튼 누르기 → 9001으로 이동
+// 9001 ~ 9180(5초): end
+
+//참고로 이런 초록색 글씨들은 주석으로, 게임에 영향을 미치지 않습니다. 설명용 글이라고 해야할까요?
+function openingMouse1(cp);
+function openingMouse2(cp);
+function OpeningText(cp){
+	if(opening[cp] == 0){
+		opening[cp] = 1;
+	}
+	if(0 < opening[cp]){CenterView("Anywhere");}
+	if(0 < opening[cp] && opening[cp] < 251){opening[cp] += 1;}
+	else if(252 < opening[cp] && opening[cp] < 287){opening[cp] += 1;}
+	else if(288 < opening[cp] && opening[cp] < 323){opening[cp] += 1;}
+	else if(3600 < opening[cp] && opening[cp] < 3635){opening[cp] += 1;}
+	else if(9000 < opening[cp] && opening[cp] < 9999){opening[cp] += 1;}
+	
+	if(opening[cp] == 37){
+		SetDeaths(cp, SetTo, 1, ms.EFFECT);
+		SetDeaths(cp, SetTo, 999, ms.MUSIC);
+		BGM.SetBGM(0);
+	}
+	
+	if(36 < opening[cp] && opening[cp] < 216){
+		if(IsUserCP()){
+			s.insert(0); //오프닝 타이틀
+			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+			s.append("\n\n");
+			s.append("\x13\x1E[EUD]\n");
+			s.append("\x13\x11음악 퀴즈 오픈소스\n");
+			s.append("\x13\x04오픈소스 제작 : Avlos(갈대)\n");
+			s.append("\n\n");
+			s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+			s.DisplayAt(0);
+		}
+	}
+	
+	if(opening[cp] == 217){SetDeaths(cp, SetTo, 3, ms.EFFECT);}
+	if(opening[cp] > 216 && opening[cp] < 432){
+		if(IsUserCP()){
+			s.insert(0); //오프닝 설명
+			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+			s.append("\n\n");
+			s.append("\x13\x1E이 유즈맵\x04은 들려오는 음악을 듣고, \x1F채팅\x04으로 음악을 맞히면 됩니다.\n");
+			s.append("\x13\x1B힌트\x04는 한 곡당 \x112번 \x04제공되며, 설정에 따라 제공되지 않을 수 있습니다.\n");
+			s.append("\x13\x17음악 장르\x04는 \x1E외국영화, 애니OST, 드라마, 게임OST\x04로 나뉩니다.\n");
+			s.append("\n\n");
+			s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+			s.DisplayAt(0);
+		}
+	}
+	if(opening[cp] == 503){
+		if(ms.MusicSelect == 0){opening[cp] = 684;}
+		TextUpdate[cp] = 1;
+	}
+	if(opening[cp] == 504){
+		if(TextUpdate[cp] == 1){
+			TextUpdate[cp] = 0;
+			if(IsUserCP()){
+				s.insert(0); //곡 세팅
+				s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+				s.append("\x13", PColor(sys.setUser), PName(sys.setUser),"\x04님이 몇곡으로 진행할지 설정합니다.\n");
+				s.append("\x13\x19설정\x04은 \x1E마우스 클릭\x04으로 진행할 수 있습니다.\n");
+				s.append("\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum1, "곡  \x1F--]\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum2, "곡  \x1F--]\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum3, "곡  \x1F--]\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum4, "곡  \x1F--]\n");
+				s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+			}
+		}
+		if(IsUserCP()){s.DisplayAt(0);}
+		eprintln("\x1D( \x04전체 곡 중 지정된 일부 곡만 재생합니다. \x1D)");
+		//eprintln("X:", fc.mX[cp], "  Y:", fc.mY[cp]);
+		if(sys.setUser == cp){openingMouse1(cp);}
+	}
+	if(opening[cp] > 504 && opening[cp] < 684){
+		if(IsUserCP()){
+			s.insert(0); //세팅 종료 후 멘트
+			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+			s.append("\n\n");
+			s.append("\x13\x1F",mp.MusicNumber2,"곡\x04으로 설정되었습니다.\n");
+			s.append("\x13\x04전체곡 중에서 ",mp.MusicNumber2,"곡이 \x19랜덤하게 \x04등장합니다.\n");
+			s.append("\x13\x02여담으로, 많은 음악퀴즈맵들은 \x04https://cafe.naver.com/edac\x02에서 받을 수 있습니다!\n");
+			s.append("\n\n");
+			s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+			s.DisplayAt(0);
+		}
+	}
+	if(opening[cp] == 683){TextUpdate[cp] = 1;}
+	if(opening[cp] == 684){
+		if(TextUpdate[cp] == 1){
+			TextUpdate[cp] = 0;
+			if(IsUserCP()){
+				s.insert(0); //게임 셋팅 PColor(sys.setUser), PName(sys.setUser)가 세팅을 진행하는 유저이름 출력부분입니다.
+				s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+				s.append("\x13", PColor(sys.setUser), PName(sys.setUser),"\x04님이 기본설정을 진행합니다.\n");
+				s.append("\x13\x19설정\x04은 \x1E마우스 클릭\x04으로 진행할 수 있습니다.\n");
+				s.append("\n");
+				s.append("\x13\x11",ptr2s(settingName1)," ", ptr2s(onoffText1[setting1]), "	\x11",ptr2s(settingName2)," ", ptr2s(onoffText2[setting2]), "\n");
+				s.append("\x13\x11",ptr2s(settingName3)," ", ptr2s(onoffText1[setting3]), "	\x11",ptr2s(settingName4)," ", ptr2s(onoffText1[setting4]), "\n");
+				if(ms.MusicShort == 1){s.append("\x13\x11",ptr2s(settingName5)," ", ptr2s(onoffText3[setting5]), "	\x14",ptr2s(settingName5)," ", ptr2s(onoffText3[setting5]), "\n");}
+				else{s.append("\x13\n");}
+				s.append("\x13\x1D설정완료\n");
+				s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+			}				//음악정답, 스킵기능 쪽 텍스트는 건드리지마시고, 힌트의 내용을 바꾸고 싶을 땐 위로 올라가서 settingName 변수에 있는 텍스트를 수정하세요.
+		}
+		if(IsUserCP()){s.DisplayAt(0);}
+		//eprintln("X:", fc.mX[cp], "  Y:", fc.mY[cp]);
+		if(sys.setUser == cp){openingMouse2(cp);}
+	}
+	if(opening[cp] > 684 && opening[cp] < 971){
+		if(IsUserCP()){
+			s.insert(0); //세팅 종료 후 멘트
+			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+			s.append("\n\n");
+			s.append("\x13\x1F설정\x04이 전부 끝났습니다. 잠시 후, 게임이 시작됩니다.\n");
+			s.append("\x13\x19정답\x04을 입력하실 땐, \x1D띄어쓰기\x04를 생략해서 입력하세요.\n");
+			s.append("\x13\x1EEx. 찰리와 초콜릿 공장 → 찰리와초콜릿공장\n");
+			s.append("\n\n");
+			s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+			s.DisplayAt(0);
+		}
+	}
+	if(opening[cp] == 972){
+		opening[cp] = 10000; //게임시작 세팅입니다.
+		DisplayText("\n\n\n\n\n\n\n\n\n\n", 4);
+		ms.LeaderBoardTrigger();
+		if(mp.MusicStep == 0){SetVariables(mp.MusicStep, 1);}
+	}
+}
+
+function openingMouse1(cp){  //곡설정
+	fc.mouseTrack(cp);
+	const mmX, mmY = fc.mX[cp], fc.mY[cp];
+	if(Deaths(cp, Exactly, 1, ms.MOUSE)){
+		if(4026 <= mmX && mmX <= 4223){
+			if(4082 <= mmY && mmY <= 4093){ //첫번째 곡수
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				SetVariables(mp.MusicNumber2, ms.musicNum1);
+				foreach(p : EUDLoopPlayer('Human')){opening[p] += 1;}
+			}
+			else  if(4098 <= mmY && mmY <= 4109){ //두번째 곡수
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				SetVariables(mp.MusicNumber2, ms.musicNum2);
+				foreach(p : EUDLoopPlayer('Human')){opening[p] += 1;}
+			}
+			else if(4114 <= mmY && mmY <= 4125){ //세번째 곡수
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				SetVariables(mp.MusicNumber2, ms.musicNum3);
+				foreach(p : EUDLoopPlayer('Human')){opening[p] += 1;}
+			}
+			else if(4129 <= mmY && mmY <= 4140){ //네번째 곡수
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				SetVariables(mp.MusicNumber2, ms.musicNum4);
+				foreach(p : EUDLoopPlayer('Human')){opening[p] += 1;}
+			}
+		}
+	}
+}
+
+function openingMouse2(cp){  //마우스 위치
+	fc.mouseTrack(cp);
+	const mmX, mmY = fc.mX[cp], fc.mY[cp];
+	if(Deaths(cp, Exactly, 1, ms.MOUSE)){
+		if(4082 <= mmY && mmY <= 4093){
+			if(4026 <= mmX && mmX <= 4094){
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				if(setting1 == 0){setting1 = 1;}
+				else{setting1 = 0;}
+				foreach(p : EUDLoopPlayer('Human')){TextUpdate[p] = 1;}
+			}
+			else if(4154 <= mmX && mmX <= 4223){
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				if(setting2 == 0){setting2 = 1;}
+				else{setting2 = 0;}
+				foreach(p : EUDLoopPlayer('Human')){TextUpdate[p] = 1;}
+			}
+		}
+		else  if(4098 <= mmY && mmY <= 4109){
+			if(4026 <= mmX && mmX <= 4094){
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				if(setting3 == 0){setting3 = 1;}
+				else{setting3 = 0;}
+				foreach(p : EUDLoopPlayer('Human')){TextUpdate[p] = 1;}
+			}
+			else if(4154 <= mmX && mmX <= 4223){
+				SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+				if(setting4 == 0){setting4 = 1;}
+				else{setting4 = 0;}
+				foreach(p : EUDLoopPlayer('Human')){TextUpdate[p] = 1;}
+			}
+		}
+		else if(4114 <= mmY && mmY <= 4125){
+			if(4026 <= mmX && mmX <= 4094){
+				if(ms.MusicShort == 1){
+					SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+					if(setting5 == 0){setting5 = 1;}
+					else{setting5 = 0;}
+					foreach(p : EUDLoopPlayer('Human')){TextUpdate[p] = 1;}
+				}
+			}
+		}
+		else if(4075 <= mmX && mmX <= 4118 && 4129 <= mmY && mmY <= 4140){	//확인버튼
+			SetDeaths(Force1, SetTo, 4, ms.EFFECT);
+			fc.mouseSwitch(1);
+			foreach(p : EUDLoopPlayer('Human')){opening[p] += 1;}
+		}
+	}
+	if(4082 <= mmY && mmY <= 4093){
+		if(3979 <= mmX && mmX <= 4094){		//음악정답
+			eprintln("\x1D( \x04정답을 못맞췄을 때 공개여부를 결정합니다. 공개시 재등장하지 않습니다. \x1D)");
+		}
+		else if(4108 <= mmX && mmX <= 4223){	//스킵기능
+			eprintln("\x1D( \x04노래 스킵 기능입니다. 정답 비공개일 때 제목이 등장하지 않고 나중에 재등장합니다. \x1D)");
+		}
+	}
+	else if(4098 <= mmY && mmY <= 4109){
+		if(3979 <= mmX && mmX <= 4094){		//장르힌트
+			eprintln("\x1D( \x04음악 종료 20초 전에 등장합니다. 비공개시 장르힌트가 제공되지 않습니다. \x1D)");
+		}
+		else if(4108 <= mmX && mmX <= 4223){	//초성힌트
+			eprintln("\x1D( \x04음악 종료 10초 전에 등장합니다. 비공개시 초성힌트가 제공되지 않습니다. \x1D)");
+		}
+	}
+	else if(4114 <= mmY && mmY <= 4125){
+		if(3979 <= mmX && mmX <= 4094){		//짧게듣기
+			if(ms.MusicShort == 1){eprintln("\x1D( \x04음악의 앞부분 2초만 재생합니다. 정답을 맞췄을 때 전부 재생됩니다. \x1D)");}
+		}
+	}
+}

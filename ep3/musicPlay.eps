@@ -1,0 +1,457 @@
+import opening as op;
+import TriggerEditor.BGMPlayer4 as BGM;
+import MusicSetting as ms;
+import System as sys;
+import functions as fc;
+import ....musicConfig;
+
+const s = StringBuffer(1024);
+const s2 = StringBuffer(1024);
+var MusicStep			= 0;	//게임진행단계 1,오프닝->시작 2,음악세팅 3,음악재생중 4,음악재생종료후2초대기 5,종료세팅후 2로 보내기
+var MusicTimer			= 0;
+var MusicTemp			= 0;
+var MusicDelay			= 0;
+const MusicHintOpenLength = ms.MusicTiming._arrlen;
+const MusicHintOpen	= EUDArray(MusicHintOpenLength);
+var MusicHintOpen2		= 0;
+var MusicOpen			= 0;	//1이면 정답공개, 0이면 미공개
+var MusicAnswerUser	= 0;	//정답을 맞힌 유저
+var MusicRemain		= 0;
+var CurrentMusic		= 0;
+//var EndingDelay			= 0;//MusicSetting의 EndingTimer*36 값 대입.
+var VoteAll				= 0;
+var MusicNumber2		= 0;//MusicNumber를 대신할 값.
+const MusicTextU		= PVariable();
+const CleanText			= PVariable();
+const UserAnswer		= PVariable();
+const VoteUser			= PVariable();
+const Ending			= PVariable();
+const TextMeassge		= PVariable();
+const TextType			= PVariable();
+var MusicPlayFront		= 0; //순차재생부분 MusicNumber값에 도달하면 재순환, 재순환시 첫인덱스가 0이면 종료
+var MusicPlayRear		= 0; //문제를 못맞췄을 때 채울 인덱스번호. 못맞출때마다 1씩 증가. 재순환시 0으로 초기화
+//const pcolor				= [Db("\x08"), Db("\x0E"), Db("\x0F"), Db("\x10"), Db("\x11"), Db("\x15"), Db("\x16")];
+
+const MusicIndex	= EUDArray(ms.MusicNumber);
+const MusicPlay		= EUDArray(ms.MusicNumber);
+//원형 배열로 사용, 셔플 후 첫 인덱스부터 진행하며 맞추면 해당인덱스 0대입, 못맞추면 앞칸부터 해당노래인덱스값 대입 후 현재인덱스 0대입.
+
+// ======================== 디버그 관련 ================================
+var Debug_A = 1;
+var DBG_N = 0;
+const dbgTextU = PVariable();
+
+const returnList = [1, 10, 100];
+// ======================== 디버그 관련 ================================
+
+function shuffle(arr, length) {
+	const arr_ = EUDArray.cast(arr);
+	var temp;
+	var rand;
+	for(var i = 0; i < length-1; i++) {
+		rand = dwrand() % (length - i) + i;
+		temp = arr_[i];
+		arr_[i] = arr_[rand];
+		arr_[rand] = temp;
+	}
+}
+function musicInit(){
+	for(var i=0; i<ms.MusicNumber; i++){
+		MusicPlay[i] = i+1;
+		MusicIndex[i] = i+1;
+	}
+	EndingDelay = ms.EndingTimer*36;
+	
+	MusicNumber2 = ms.WantMusicNumber;
+	MusicRemain = MusicNumber2;
+	shuffle(MusicPlay, ms.MusicNumber);
+}
+function musicDebug();
+function DBGControl(cp);
+function musicSystem(){
+	if(MusicStep == 1){
+		MusicDelay += 1;
+		if(MusicDelay > 71){
+			MusicDelay = 0;
+			musicInit(); 
+			if (op.debuging == 0) MusicStep = 2;
+			else {
+				MusicStep = 22;
+				foreach(p : EUDLoopPlayer('Human')){dbgTextU[p] = 1;}
+			}
+		}
+	}
+	if(MusicStep == 2){
+		MusicAnswerUser = 0;
+		MusicDelay = 0;
+		for (var idx_music_hint = 0; idx_music_hint < MusicHintOpenLength; idx_music_hint++){
+			MusicHintOpen[idx_music_hint] = 0;
+		}
+		MusicOpen = 0;
+		VoteAll = 0;
+		
+		MusicTemp = MusicPlay[MusicPlayFront];  //못맞춘 경우에 사용할 변수
+		CurrentMusic = MusicTemp;
+		MusicTimer = musicConfig.MusicLength[MusicTemp-1];
+		MusicTimer -= MusicTimer*2/39;
+		
+		MusicPlay[MusicPlayFront] = 0;
+		MusicPlayFront++;
+		MusicStep = 3;
+		foreach(p : EUDLoopPlayer('Human')){MusicTextU[p] = 1; CleanText[p] = 1; VoteUser[p] = 0;}
+	}
+	if(MusicStep == 3){
+		if(MusicTimer > 0){
+			MusicDelay += 1;
+			if(MusicDelay > 35){
+				MusicDelay = 0;
+				MusicTimer -= 1;
+				foreach(p : EUDLoopPlayer('Human')){MusicTextU[p] = 1;}
+			}
+			for (var idx_music_hint = 0; idx_music_hint < MusicHintOpenLength; idx_music_hint++){
+				if (MusicHintOpen[idx_music_hint] == 0 && MusicOpen == 0 && MusicTimer <= ms.MusicTiming[idx_music_hint]){
+					MusicHintOpen[idx_music_hint] = 1; foreach(p : EUDLoopPlayer('Human')){MusicTextU[p] = 1;}
+				}
+			}
+		}
+		if(MusicTimer == 0){
+			CurrentMusic = 0;
+			MusicStep = 4;
+			MusicDelay = 0;
+			if(MusicAnswerUser == 0){
+				MusicPlay[MusicPlayRear] = MusicTemp;
+				MusicPlayRear++;
+			}
+		}
+		const VoteN = sys.UserNumber;
+		
+		const conditionA = (VoteAll >= ms.VoteNumA[VoteN-1] && MusicOpen == 0);
+		const conditionB = (VoteAll >= ms.VoteNumB[VoteN-1] && MusicOpen == 1);
+		
+		if(conditionA || conditionB || Deaths(fc.superUser, Exactly, 2, ms.KEY)){ //투표
+			CurrentMusic = 0;
+			MusicDelay = 0;
+			MusicStep = 4;
+			if(MusicAnswerUser == 0){
+				MusicOpen = 1;
+				MusicRemain--;
+			}
+			//tct.printAll("\x1F■ \x04스킵투표로 현재곡을 스킵합니다.");
+			if(conditionA || conditionB){
+				foreach(p : EUDLoopPlayer('Human', None, None)){
+					setcurpl(p);
+					s2.print("\x1F■ \x04스킵투표로 현재곡을 스킵합니다.");
+					MusicTextU[p] = 1;
+				}
+			}
+			else if(Deaths(fc.superUser, Exactly, 2, ms.KEY)){
+				foreach(p : EUDLoopPlayer('Human', None, None)){
+					setcurpl(p);
+					s2.print("\x1F■ \x04방장이 현재곡을 스킵했습니다.");
+					MusicTextU[p] = 1;
+				}
+			}
+			SetDeaths(Force1, SetTo, 4, ms.EFFECT);
+		}
+	}
+	if(MusicStep == 4){
+		MusicDelay++;
+		if(MusicDelay > 71){
+			MusicDelay = 0;
+			MusicStep = 5;
+		}
+	}
+	if(MusicStep == 5){
+		if (op.debuging == 0){
+			MusicStep = 2;
+			if(MusicRemain > 0){
+				if(MusicPlayFront == MusicNumber2){
+					shuffle(MusicPlay, MusicRemain);
+					MusicPlayFront = 0;
+					MusicPlayRear = 0;
+					if(MusicPlay[MusicPlayFront] == 0){ //재순회했을 때, 0번인덱스가 0인 경우
+						MusicStep = 20;
+						CurrentMusic = ms.EndingMusic;
+					}
+				}
+				else{
+					if(MusicPlay[MusicPlayFront] == 0){ //순회 전에 값이 0인 경우
+						MusicStep = 20;
+						CurrentMusic = ms.EndingMusic;
+					}
+				}
+			}
+			else{
+				MusicStep = 20;
+				CurrentMusic = ms.EndingMusic;
+			}
+		}
+		else{
+			foreach(p : EUDLoopPlayer('Human')){dbgTextU[p] = 1; CleanText[p] = 1;}
+			MusicStep = 22;
+			BGM.SetBGM(9999, 0);
+		}
+	}
+}
+function checkCondition01(K);
+function checkAnswer01(pp, K);
+function conditionQuiz01(myIdx);
+function binarySearchQuiz01(i, j);
+function checkAnswer(pp, K);
+
+function musicPlay(cp){ //플레이어 텍스트 및 정답관리
+	if(MusicStep > 0){
+		if(!Deaths(cp, Exactly, CurrentMusic, ms.MUSIC)){
+			SetDeaths(cp, SetTo, CurrentMusic, ms.MUSIC);
+			BGM.SetBGM(CurrentMusic);
+		}
+		if(MusicStep < 20){ //엔딩이 아닐 때
+			if(MusicTextU[cp] == 1){
+				MusicTextU[cp] = 0;
+				if(IsUserCP()){
+					s.insert(0);
+					if(MusicStep <= 4){
+						s.append("\x13\x1E남은곡 ( ", MusicRemain, " / ", MusicNumber2, " )\n");
+
+						s.append("\x13\x19음악\x04을 듣고 ");
+						for (var idx = 0; idx < op.mysetting1._arrlen; idx++){
+							if (idx != 0)
+								s.append(" \x04or ");
+							s.append("\x17", ptr2s(op.mysetText1[idx]));
+						}
+						s.append("\x04 을(를) 입력하세요.\n");
+
+						s.append("\x13\x1F- \x1D", MusicTimer, "초 \x1F-\n");
+						if(MusicOpen == 1 || MusicHintOpen[0] == 1){s.append("\n\x13\x07힌트 \x04:", ptr2s(musicConfig.MusicHint1[MusicTemp-1]));}
+						if(MusicOpen == 1){s.append("\n\x13\x1F정답 \x04: ", ptr2s(musicConfig.MusicAnswer[MusicTemp-1]));}
+						else if(MusicHintOpen[3] == 1){s.append("\n\x13\x07초성 \x04:", ptr2s(musicConfig.ConsonantHint3[MusicTemp-1]));}
+						else if(MusicHintOpen[2] == 1){s.append("\n\x13\x07초성 \x04:", ptr2s(musicConfig.ConsonantHint2[MusicTemp-1]));}
+						else if(MusicHintOpen[1] == 1){s.append("\n\x13\x07초성 \x04:", ptr2s(musicConfig.ConsonantHint1[MusicTemp-1]));}
+					}
+				}
+			}
+			if(IsUserCP()){s.DisplayAt(0);}
+			
+			const VoteN = sys.UserNumber;
+			if(VoteAll == 0){eprintln("\x1D( \x19\"K\"\x04키를 누르면, 곡을 넘깁니다. \x1D)");}
+			else{eprintln("\x1D( \x19\"K\"\x04키를 누르면, 곡을 넘깁니다. \x1E투표인원 ", VoteAll, "/", ms.VoteNum[VoteN-1], " \x1D)");}
+			
+			if(CleanText[cp] == 1){
+				CleanText[cp] = 0;
+				if(IsUserCP()){s2.printfAt(0, "\n\n\n\n\n\n\n\n");}
+			}
+			
+			if(MusicStep == 3){
+				if(Deaths(cp, Exactly, 1, ms.KEY)){
+					if(VoteUser[cp] == 0){
+						VoteUser[cp] = 1;
+						VoteAll += 1;
+						s2.print("\x08！\x04스킵에 투표하셨습니다.");
+						SetDeaths(cp, SetTo, 2, ms.EFFECT);
+					}
+				}
+				if(Deaths(cp, AtLeast, 1, ms.ANSWER)){ //정답처리
+					const key = fc.GetDeath(cp, ms.ANSWER);
+					
+					if (MusicOpen  == 0){
+						checkAnswer(key);
+					}
+				}
+			}
+		}
+		if(MusicStep == 20){
+			if(Ending[cp] == 0){
+				s2.insert(0);
+				s2.append(ptr2s(ms.EndingText1), "\n");
+				s2.append(ptr2s(ms.EndingText2), "\n");
+				s2.append(ptr2s(ms.EndingText3), "\n");
+				s2.append(ptr2s(ms.EndingText4), "\n");
+				s2.append(ptr2s(ms.EndingText5), "\n");
+				s2.append(ptr2s(ms.EndingText6), "\n");
+				s2.append(ptr2s(ms.EndingText7));
+			}
+			if(IsUserCP()){s2.DisplayAt(0);}
+			if(BGM.isstop == 1){Victory();}
+			Ending[cp] += 1;
+		}
+		else if (MusicStep == 22){
+			if(sys.setUser == cp){DBGControl(cp);}
+			if(dbgTextU[cp] == 1){
+				dbgTextU[cp] = 0;
+				if(IsUserCP()){
+					s.insert(0);
+					s.append("\x13\x07DEBUG MODE \x02(W A S D로 조작 / Q로 선택)\n");
+					s.append("\x13\x04현재 숫자: \x1F", Debug_A, "          ","\x04증감 숫자: \x18",returnList[DBG_N],"\n");
+					if (Debug_A == 0){
+						s.append("\x13\x07엔딩");
+					}
+					else{
+						s.append("\x13\x07노래: \x10[", ptr2s(ms.AniAnswer[Debug_A-1]), "]\x04 ", ptr2s(ms.MusicAnswer[Debug_A-1]));
+					}
+				}
+			}
+			if(IsUserCP()){s.DisplayAt(0);}
+			if(CleanText[cp] == 1){
+				CleanText[cp] = 0;
+				if(IsUserCP()){s2.printfAt(0, "\n\n\n\n\n\n\n\n");}
+			}
+		}
+		else{
+			if(TextMeassge[cp] < 4320){TextMeassge[cp] += 1;}
+			else{
+				TextMeassge[cp] = 0;
+				if(TextType[cp] == 0){
+					TextType[cp] = 1;
+					s2.print("\x1F■ \x04방장은 다른 유저를 \x08강퇴\x04할 수 있는 권한을 가지고 있습니다.\n   \x1E\"!강퇴\"+\"플레이어숫자\"를 채팅으로 치면 강퇴됩니다. Ex. !강퇴1");
+				}
+				else if(TextType[cp] == 1){
+					TextType[cp] = 0;
+					s2.print("\x1F■ \x04방장은 \x02→키\x04를 눌러서 곡을 \x06강제로 스킵\x04할 수 있습니다.");
+				}
+			}
+		}
+	}
+}
+
+function musicDebug(){
+	if (Debug_A == 0){
+		MusicStep = 20;
+		CurrentMusic = ms.EndingMusic;
+		continue;
+	}
+	
+	MusicAnswerUser = 0;
+	MusicDelay = 0;	
+	for (var idx_music_hint = 0; idx_music_hint < MusicHintOpenLength; idx_music_hint++){
+		MusicHintOpen[idx_music_hint] = 0;
+	}
+	MusicOpen = 0;
+	VoteAll = 0;
+	
+	MusicTemp = Debug_A;
+	CurrentMusic = MusicTemp;
+	MusicTimer = musicConfig.MusicLength[MusicTemp-1];
+	MusicTimer -= MusicTimer*2/39;
+	
+	MusicRemain++;
+	MusicPlayRear = 0;
+	
+	MusicStep = 3;
+	
+	foreach(p : EUDLoopPlayer('Human')){MusicTextU[p] = 1; CleanText[p] = 1; VoteUser[p] = 0; BGM.SuperReset();}
+}
+
+function conditionQuiz01(myIdx){
+	/*0: a>b, 1: a==b, 2: a<b*/
+	const v1 = musicConfig.key10000List[myIdx];
+	const v2 = 1999 + 0 * 1000 + MusicTemp;
+	if (v1>v2){return 0;}
+	else if (v1==v2){return 1;}
+	return 2;
+}
+function binarySearchQuiz01(i, j){
+// 찾으면 key 값을, 못찾으면 0을 반환
+	var start = i;
+	var end = j;
+	var mid = (i+j)/2;
+	var cnt = 0;
+	while(start <= end){
+		const mycondition = coconditionQuiz01(mid)
+		if (mycondition == 0){
+			if (mid == 0){return 0;}
+			else{end=mid-1;}
+		}
+		else if (mycondition == 2){
+			start=mid+1;
+		}
+		else{return mid+1;}
+	
+		cnt += 1
+		if (cnt >100){s2.print("!binarySearch오류!!!"); return 0;}
+	}
+	return 0;
+}
+function checkAnswer(pp, K){
+	var q1result = 0;
+	if (K >= 10000){
+		const i = ms.key10000Length[K-10000];
+		const j = ms.key10000Length[key-10000+1]-1;
+		q1result = binarySearchQuiz01(i, j, K);
+	}
+	else{
+		if (conditionQuiz01(K) == 1){
+			q1result = K + 1;
+		}
+	}
+	
+	if (q1result > 0){
+		MusicAnswerUser = 1;
+		MusicOpen = 1;
+		MusicRemain--;
+		
+		UserAnswer[pp] += 1;
+		foreach(p : EUDLoopPlayer('Human', None, None)){
+			setcurpl(p);
+			s2.print("\x1F■ ", PColor(pp), PName(pp), "\x04님께서 정답을 맞추셨습니다!");
+			MusicTextU[p] = 1;
+		}
+		setcurpl(pp);
+		SetDeaths(Force1, SetTo, 5, ms.EFFECT);
+		SetScore(pp, Add, 1, Custom);
+	}
+}
+
+function checkCondition01(K){
+	for (var i = 0; i < op.mysetting1._arrlen; i++){
+		if (op.mysetting1[i] == 1 && K == 1999 + i * 1000 + MusicTemp)
+			return 1;
+	}
+	return 0;
+}
+
+function checkAnswer01(pp, K){
+	if(checkCondition01(K) == 1){
+		MusicAnswerUser = 1;
+		MusicOpen = 1;
+		MusicRemain--;
+		
+		UserAnswer[pp] += 1;
+		foreach(p : EUDLoopPlayer('Human', None, None)){
+			setcurpl(p);
+			s2.print("\x1F■ ", PColor(pp), PName(pp), "\x04님께서 정답을 맞추셨습니다!");
+			MusicTextU[p] = 1;
+		}
+		setcurpl(pp);
+		SetDeaths(Force1, SetTo, 5, ms.EFFECT);
+		SetScore(pp, Add, 1, Custom);
+		
+		return 1;
+	}
+	return 0;
+}
+
+
+
+function DBGControl(cp){
+	if(Deaths(cp, Exactly, 1, ms.DEBUG_CONTROL)){ //UP
+		const myNum = returnList[DBG_N];
+		Debug_A =  (Debug_A + myNum > ms.MusicNumber)? (ms.MusicNumber) : (Debug_A + myNum);
+		foreach(p : EUDLoopPlayer('Human')){dbgTextU[p] = 1;}
+	}
+	if(Deaths(cp, Exactly, 2, ms.DEBUG_CONTROL)){ //DOWN
+		const myNum = returnList[DBG_N];
+		Debug_A =  (Debug_A <= myNum)? (0) : (Debug_A - myNum);
+		foreach(p : EUDLoopPlayer('Human')){dbgTextU[p] = 1;}
+	}
+	if(Deaths(cp, Exactly, 3, ms.DEBUG_CONTROL)){ //LEFT
+		DBG_N = (DBG_N == 0)? (0) : (DBG_N - 1);
+		foreach(p : EUDLoopPlayer('Human')){dbgTextU[p] = 1;}
+	}
+	if(Deaths(cp, Exactly, 4, ms.DEBUG_CONTROL)){ //RIGHT
+		DBG_N = (DBG_N == returnList._arrlen - 1)? (returnList._arrlen - 1) : (DBG_N + 1);
+		foreach(p : EUDLoopPlayer('Human')){dbgTextU[p] = 1;}
+	}
+	if(Deaths(cp, Exactly, 99, ms.DEBUG_CONTROL)){ //Select
+		musicDebug();
+	}
+}
