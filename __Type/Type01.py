@@ -37,6 +37,13 @@ def DeleteAllFiles(filePath, ext):
         return 'Directory Not Found'
 
 
+def DeleteFile(filePath):
+    """단일파일 삭제"""
+    filePath = rootChanger(filePath)
+    if isfile(filePath):
+        remove(filePath)
+
+
 # 초성 생성
 def checking(word):
     """매 글자의 초성을 반환합니다."""
@@ -223,34 +230,51 @@ class TxtDict:
     def __init__(self) -> None:
         self.Dict = {}
 
-
     def set_init(self, name, link):
         self.Dict[name] = {}
-        self.Dict[name]["text"] = ""
-        self.Dict[name]["link"] = rootChanger(link)
         self.Dict[name]["list"] = []
+        self.Dict[name]["link"] = rootChanger(link)
+        self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
+        self.Dict[name]["wantWrite"] = False
+
+    def set_write(self, name, boolean):
+        self.Dict[name]["wantWrite"] = boolean
+
+    def set_write_all(self, boolean):
+        for name in self.Dict.keys():
+            self.Dict[name]["wantWrite"] = boolean
 
     def add_list(self, name, data):
+        if name not in self.Dict.keys():
+            self.Dict[name] = {}
+            self.Dict[name]["link"] = rootChanger(f".\\{name}")
+            self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
+
         self.Dict[name]["list"].append(data)
 
     def add_text(self, name, text):
         if name not in self.Dict.keys():
             self.Dict[name] = {}
-            self.Dict[name]["text"] = ""
             self.Dict[name]["link"] = rootChanger(f".\\{name}")
+            self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
         
-        self.Dict[name]["text"] += text
+        self.Dict[name]["file"].write(text)
 
-    def return_text(self, name):
-        return self.Dict[name]["text"]
+    def return_list(self, name, idx1=None, idx2=None):
+        if idx1 == None:
+            return self.Dict[name]["list"]
+        elif idx2 == None:
+            return self.Dict[name]["list"][idx1]
+        return self.Dict[name]["list"][idx1:idx2]
 
     def write_text(self):
         for name in self.Dict.keys():
-            with open(self.Dict[name]["link"], "w", encoding="utf-8") as f:
-                if self.Dict[name]["text"]:        
-                    f.write(self.Dict[name]["text"])
-                else:
-                    f.write(str(self.Dict[name]["list"])[1:-1])
+            if self.Dict[name]["wantWrite"] == False:
+                self.Dict[name]["file"].close()
+                DeleteFile(self.Dict[name]["link"])
+            elif self.Dict[name]["list"]:
+                if self.Dict[name]["wantWrite"]:
+                    self.Dict[name]["file"].write(str(self.Dict[name]["list"])[1:-1])
 
 
 class MyType:
@@ -292,7 +316,7 @@ class MyType:
                 filepath = self.orgpath + filename
                 if isfile(filepath):
                     print(f"{filename} is already exist.")
-                    print(f"count:\t {idx:03} / {total:03} \t[{SongName}]")
+                    print(f"count:\t <{idx:03} / {total:03}> \t[{SongName}]")
                     return
                 e = f"지정한 파일 [{filename}]이 현재 경로에 존재하지 않습니다."
                 print(e)
@@ -308,12 +332,15 @@ class MyType:
         if "nicovideo" in addr:
             filename = f"{addr.split('watch/')[1]}.wav"
         else:
-            filename = f"{addr.split('?v=')[1].split('&list=')[0]}.wav"
+            if "youtu.be/" in addr:
+                filename = f"{addr.split('youtu.be/')[1].split('&')[0]}.wav"
+            elif "youtube":
+                filename = f"{addr.split('?v=')[1].split('&')[0]}.wav"
         filepath = self.orgpath + filename
 
         if isfile(filepath):
             print(f"{filename} is already exist.")
-            print(f"count:\t {idx:03} / {total:03} \t[{SongName}]")
+            print(f"count:\t <{idx:03} / {total:03}> \t[{SongName}]")
             return
         else:
             for sp in self.superpath:
@@ -324,7 +351,7 @@ class MyType:
                     return
 
         # 유튜브 주소 기반 다운로드
-        if "youtube" in addr:
+        if "youtube" in addr or "youtu.be/" in addr:
             if isfile(filepath):
                 print(f"{filename} is already exist.")
             else:
@@ -385,7 +412,7 @@ class MyType:
                         endian='LITTLE', subtype='PCM_16')
 
         print(f"{filename} download complete. \t{SongName}")
-        print(f"count:\t <{idx:03} / {total:03} \t[{SongName}]")
+        print(f"count:\t <{idx:03} / {total:03}> \t[{SongName}]")
         sleep(0.5)
 
     def CutFile(self, addr, SongName, idx, total, cut1, cut2, SI, mono=False):
@@ -402,8 +429,10 @@ class MyType:
         elif "nicovideo" in addr:
             filename = f"{addr.split('watch/')[1]}.wav"
         else:
-            filename = f"{addr.split('?v=')[1].split('&list=')[0]}.wav"
-
+            if "youtu.be/" in addr:
+                filename = f"{addr.split('youtu.be/')[1].split('&')[0]}.wav"
+            elif "youtube":
+                filename = f"{addr.split('?v=')[1].split('&')[0]}.wav"
         length = round(cut2 - cut1, 5)
 
         filename2 = f'{idx:03}.wav'
@@ -567,8 +596,9 @@ class MyType:
         if self.ErrMSG["SingleLine"]:
             print("한 줄에서, 같은 정답이 2개 이상 사용되었습니다.")
             print("종료합니다...")
-            input()
-            exit()
+            self.TxtDict.set_write_all(False)
+            self.TxtDict.set_write("DupleTxt", True)
+            return False
 
         self.TxtDict.set_init("TriggerTxt", rootChanger(self.txtpath + "\\" + "정답 트리거.txt"))
         self.TxtDict.add_text("TriggerTxt", "[chatEvent]\n__addr__: 0x58D900\n")
@@ -696,13 +726,18 @@ class MyType:
 
 
         self.TxtDict.add_text("TriggerTxt", "\n!강퇴1: 1990\n!강퇴2: 1991\n!강퇴3: 1992\n!강퇴4: 1993\n!강퇴5: 1994\n!강퇴6: 1995\n!강퇴7: 1996\n")
+        self.TxtDict.set_write_all(True)
+        
+        return True
 
     def Running(self):
         wantDL = None
         isMono = None
 
         self.ReadData()
-        self.MakeTxt()
+        if not self.MakeTxt():
+            return
+
         self.TxtDict.write_text()
 
 
@@ -738,7 +773,7 @@ class MyType:
             self.YouTubeDownload(**in_dict)
 
         if self.download_failed:
-            with open(rootChanger(self.txtpath + "\\" + "다운로드 이슈.txt"), "w", encoding="utf-8") as f:
+            with open(rootChanger(self.txtpath + "\\" + "!!!다운로드 이슈.txt"), "w", encoding="utf-8") as f:
                 f.write(f"total failed: {len(self.download_failed)}\n\n")
                 for failed in self.download_failed:
                     f.write(f'[{failed["songname"]}] was failed at [{failed["address"]}]\n')
@@ -755,3 +790,5 @@ class MyType:
             in_dict = {"addr":song.address, "SongName":song.basic_info[0], "idx":idx, "total":self.MyDict.Scount, "cut1": song.time[0], "cut2": song.time[1], "SI":SI, "mono":isMono}
             self.CutFile(**in_dict)
 
+    def make_config(self):
+        pass

@@ -1,5 +1,3 @@
-from curses import noecho
-from inspect import iscoroutine
 from os import listdir, rename, scandir, remove
 from os.path import isdir, isfile, splitext
 from shutil import copy2
@@ -36,6 +34,14 @@ def DeleteAllFiles(filePath, ext):
         return 'Remove All File'
     else:
         return 'Directory Not Found'
+
+
+def DeleteFile(filePath):
+    """단일파일 삭제"""
+    filePath = rootChanger(filePath)
+    if isfile(filePath):
+        remove(filePath)
+
 
 
 # 초성 생성
@@ -199,13 +205,18 @@ def calculateMylength(myword):
 
 
 
-class MyLyric:
+class MyCut:
     def __init__(self):
+        self.idx2 = None
+        self.singer = None
+        self.address = None
+        self.time = None
+
         self.lyrics_length = None
         self.lyrics_init_state = None
         self.lyrics_answer = None
-        self.show_lyrics_answer = None
-        self.show_lyrics_bar = None
+        self.show_lyrics_answer = []
+        self.show_lyrics_bar = []
         self.lyrics_line = None
         self.lyrics_line_length = None
 
@@ -214,19 +225,16 @@ class MySong:
     def __init__(self):
         """idx1: 노래 순번 / idx2: 노래 cut 번호 / idx3: artist구분 번호"""
         self.idx1 = None
-        self.idx2 = None
-        self.idx3 = None
         self.basic_info = None
-        self.address = None
-        self.time = None
-        # 텍스트 분리 시, length list를ㄹ 따로 만들자
-        self.lyrics = MyLyric()
+        # 텍스트 분리 시, length list를 따로 만들자
+        self.cuts = {}
         # 가사 길이 & 가사 표시 & 가사 정답 & 
 
 
 class MyDict:
     AnswerDict = {}
     Scount = 0
+    Lcount = 0
     def __init__(self):
         self.songDict = {}
         self.typeDict = {}
@@ -239,57 +247,58 @@ class MyDict:
         if appendType == "Song":
             d1 = datalist[0] - 1
             d2 = datalist[1] - 1
-            d3 = datalist[3] - 1
-            ansidx = self.ansidx2
 
-            myD = f"{d1:03}-{d2:03}"
-
-            if myD not in self.songDict:
-                self.songDict[myD] = MySong()
-                self.songDict[myD].idx1 = d1
-                self.songDict[myD].idx2 = d2
-                self.songDict[myD].idx3 = d3
+            if d1 not in self.songDict:
+                self.songDict[d1] = MySong()
+                self.songDict[d1].idx1 = d1
+                self.songDict[d1].basic_info = [str(data) if data else "" for data in datalist[2:8]]
+                
             else:
-                raise IndexError
+                if d2 in self.songDict[d1].cuts.keys():
+                    raise IndexError
 
-            self.songDict[myD].basic_info = [str(data) if data else "" for data in datalist[2:9]]
-            self.songDict[myD].address = str(datalist[9])
-            self.songDict[myD].time = [x if x else 0 for x in [datalist[10], datalist[11]]]
-            self.songDict[myD].lyrics.lyrics_length = 0 if datalist[13] == None else datalist[13]
+            self.songDict[d1].cuts[d2] = MyCut()
+            self.songDict[d1].cuts[d2].idx2 = d2
+            
+            self.songDict[d1].cuts[d2].singer = str(datalist[8])
+            self.songDict[d1].cuts[d2].address = str(datalist[9])
+            self.songDict[d1].cuts[d2].time = [x if x else 0 for x in [datalist[10], datalist[11]]]
+            self.songDict[d1].cuts[d2].lyrics_length = 0 if datalist[13] == None else datalist[13]
             lyrics_org = [x for x in datalist[self.ansidx:] if x]
 
-            self.songDict[myD].lyrics.lyrics_line = [0]
-            self.songDict[myD].lyrics.lyrics_init_state = [1 if "(N)" in x else 0 for x in lyrics_org]
-            self.songDict[myD].lyrics.show_lyrics_answer = []
-            lyrics_split = [x.split(" / ") for x in lyrics_org[:self.songDict[myD].lyrics.lyrics_length] if x]
+            self.songDict[d1].cuts[d2].lyrics_line = [0]
+            self.songDict[d1].cuts[d2].lyrics_init_state = [1 if "(N)" in x else 0 for x in lyrics_org]
+            self.songDict[d1].cuts[d2].show_lyrics_answer = []
+            lyrics_split = [x.split(" / ") for x in lyrics_org[:self.songDict[d1].cuts[d2].lyrics_length] if x]
         
-            typeKey = self.songDict[myD].basic_info[4]
+            typeKey = self.songDict[d1].basic_info[4]
             if self.typeDict.get(typeKey) == None:
                 self.typeDict[typeKey] = []
-            self.typeDict[typeKey].append()
+            if d1 not in self.typeDict[typeKey]:
+                self.typeDict[typeKey].append(d1)
 
             idx4 = 0
             idx5 = -2
 
-            for idx6 in range(self.songDict[myD].lyrics.lyrics_length):
+            for idx6 in range(self.songDict[d1].cuts[d2].lyrics_length):
                 W1 = lyrics_split[idx6]
-                W2 = lyrics_split[idx6+1] if idx6+1< self.songDict[myD].lyrics.lyrics_length else None
-                W3 = lyrics_split[idx6+2] if idx6+2< self.songDict[myD].lyrics.lyrics_length else None
-                W4 = lyrics_split[idx6+3] if idx6+3< self.songDict[myD].lyrics.lyrics_length else None
-                W5 = lyrics_split[idx6+4] if idx6+4< self.songDict[myD].lyrics.lyrics_length else None
+                W2 = lyrics_split[idx6+1] if idx6+1< self.songDict[d1].cuts[d2].lyrics_length else None
+                W3 = lyrics_split[idx6+2] if idx6+2< self.songDict[d1].cuts[d2].lyrics_length else None
+                W4 = lyrics_split[idx6+3] if idx6+3< self.songDict[d1].cuts[d2].lyrics_length else None
+                W5 = lyrics_split[idx6+4] if idx6+4< self.songDict[d1].cuts[d2].lyrics_length else None
                     
 
                 idx5 += 2.5
                 myword = lyrics_split[idx6][0].replace("(N)", "").replace("  ", " ")
-                self.songDict[myD].lyrics.show_lyrics_answer.append(myword)
-                self.songDict[myD].lyrics.show_lyrics_bar.append(makebar2(myword))
+                self.songDict[d1].cuts[d2].show_lyrics_answer.append(myword)
+                self.songDict[d1].cuts[d2].show_lyrics_bar.append(makebar2(myword))
                 mylen = calculateMylength(myword)
 
                 if idx5 + mylen <= 51:
-                    self.songDict[myD].lyrics.lyrics_line[-1] += 1
+                    self.songDict[d1].cuts[d2].lyrics_line[-1] += 1
                     idx5 += mylen
                 else:
-                    self.songDict[myD].lyrics.lyrics_line.append(self.songDict[myD].lyrics.lyrics_line[-1]+1)
+                    self.songDict[d1].cuts[d2].lyrics_line.append(self.songDict[d1].cuts[d2].lyrics_line[-1]+1)
                     idx5 = mylen
 
                 w_list = []
@@ -312,61 +321,86 @@ class MyDict:
                         w_list[-1].append(w)
                 
                 selected = [0 for _ in w_list]
-                max_select = [len(w)-1 for w in w_list]
-                while selected[0] <= max_select[0]:
+                max_select = [len(w) for w in w_list]
+
+                if not selected:
+                    continue
+                while selected[0] < max_select[0]:
                     selected[-1] += 1
                     for i in range(len(selected)-1, 0, -1):
                         if selected[i] >= max_select[i]:
                             selected[i] = 0
                             selected[i-1] += 1
 
+                    iscontinue = False
                     for idx_s, s in enumerate(selected):
-                        iscontinue = False
+                        
                         if s == 0:
                             if idx_s == len(selected):
                                 continue
                             if sum(selected[idx_s:]) != 0:
                                 iscontinue = True
                                 break
-                        if iscontinue:
-                            continue
+                    if iscontinue:
+                        continue
+                    
+                    if selected[0] >= max_select[0]:
+                        break
 
-                    w_conjoined = " ".join([w_li[selected[idx]] for idx, w_li in enumerate(len(w_list))]).strip()
+                    # print(w_list)
+                    # print(selected)
+                    # print(max_select)
+                    w_conjoined = " ".join([w_li[selected[idx]] for idx, w_li in enumerate(w_list)]).strip()
+                    
                     idx7 = len(w_list) - selected.count(0)-1
                     if "(yu)" in w_conjoined:
                         idx7 += 5
                         w_conjoined = w_conjoined.replace("(yu)", "")
 
-                    if w_conjoined not in self.AnswerDict.keys():
-                        self.AnswerDict[w_conjoined] = []
-                    self.AnswerDict[w_conjoined].append((5000 + d1*100 + idx6)*10+idx7)
-            self.songDict[myD].lyrics.lyrics_line_length.append(len(self.songDict[myD].lyrics.show_lyrics_answer))
 
+                    for w_conjoined_answer in makeAnswer(w_conjoined):
+                        if w_conjoined_answer not in self.AnswerDict.keys():
+                            self.AnswerDict[w_conjoined_answer] = []
+
+                        self.AnswerDict[w_conjoined_answer].append((5000 + self.Scount*100 + idx6)*10+idx7)
+                        # print(f"{w_conjoined_answer}: {(5000 + self.Scount*100 + idx6)*10+idx7}")
+            self.songDict[d1].cuts[d2].lyrics_line_length=len(self.songDict[d1].cuts[d2].show_lyrics_answer)
+            self.Lcount += 1
+        self.Scount += 1
 
 class TxtDict:
     def __init__(self) -> None:
         self.Dict = {}
 
-
     def set_init(self, name, link):
         self.Dict[name] = {}
-        self.Dict[name]["text"] = ""
-        self.Dict[name]["link"] = rootChanger(link)
         self.Dict[name]["list"] = []
+        self.Dict[name]["link"] = rootChanger(link)
+        self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
+        self.Dict[name]["wantWrite"] = False
+
+    def set_write(self, name, boolean):
+        self.Dict[name]["wantWrite"] = boolean
+
+    def set_write_all(self, boolean):
+        for name in self.Dict.keys():
+            self.Dict[name]["wantWrite"] = boolean
 
     def add_list(self, name, data):
+        if name not in self.Dict.keys():
+            self.Dict[name] = {}
+            self.Dict[name]["link"] = rootChanger(f".\\{name}")
+            self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
+
         self.Dict[name]["list"].append(data)
 
     def add_text(self, name, text):
         if name not in self.Dict.keys():
             self.Dict[name] = {}
-            self.Dict[name]["text"] = ""
             self.Dict[name]["link"] = rootChanger(f".\\{name}")
+            self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
         
-        self.Dict[name]["text"] += text
-
-    def return_text(self, name):
-        return self.Dict[name]["text"]
+        self.Dict[name]["file"].write(text)
 
     def return_list(self, name, idx1=None, idx2=None):
         if idx1 == None:
@@ -377,15 +411,12 @@ class TxtDict:
 
     def write_text(self):
         for name in self.Dict.keys():
-            with open(self.Dict[name]["link"], "w", encoding="utf-8") as f:
-                if self.Dict[name]["text"]:        
-                    f.write(self.Dict[name]["text"])
-                else:
-                    if isinstance(self.Dict[name]["list"][0], str):
-                        for li in self.Dict[name]["list"]:
-                            f.write(str(li) + ",\n")
-                    else:
-                        f.write(str(self.Dict[name]["list"])[1:-1])
+            if self.Dict[name]["wantWrite"] == False:
+                self.Dict[name]["file"].close()
+                DeleteFile(self.Dict[name]["link"])
+            elif self.Dict[name]["list"]:
+                if self.Dict[name]["wantWrite"]:
+                    self.Dict[name]["file"].write(str(self.Dict[name]["list"])[1:-1])
 
 
 class MyType:
@@ -637,7 +668,7 @@ class MyType:
             if datalist[0] == None or datalist[0] == "":
                 continue
 
-            self.MyDict.append("Song", datalist=datalist, numberCut=self.songNumberCut)
+            self.MyDict.append("Song", datalist=datalist)
 
     def MakeTxt(self):
         self.TriggerDict = {}
@@ -657,6 +688,7 @@ class MyType:
         self.TxtDict = TxtDict()
 
         print(DeleteAllFiles(self.txtpath, ".txt"))
+        # print(self.MyDict.AnswerDict)
 
         for val in self.MyDict.AnswerDict.keys():
             key = self.MyDict.AnswerDict[val]
@@ -685,10 +717,6 @@ class MyType:
                     self.TriggerDict[key[0]] = []
                 self.TriggerDict[key[0]] += [val]
 
-                if key[0] not in self.TriggerDict:
-                    self.TriggerDict[key[0]] = []
-                self.TriggerDict[key[0]] += [val]
-
                 self.KeyDict[key[0]] = key[0]
 
         self.TxtDict.set_init("DupleTxt", self.txtpath + "\\" + "!중복 여부 확인용.txt")
@@ -700,9 +728,9 @@ class MyType:
         if self.ErrMSG["SingleLine"]:
             print("한 줄에서, 같은 정답이 2개 이상 사용되었습니다.")
             print("종료합니다...")
-            self.TxtDict.write_text()
-            input()
-            exit()
+            # self.TxtDict.write_text()
+            # input()
+            # exit()
 
         self.TxtDict.set_init("Key2000Txt", self.txtpath + "\\" + "key2000List.txt")
         self.TxtDict.set_init("Key2000LenTxt", self.txtpath + "\\" + "key2000Length.txt")
@@ -712,6 +740,7 @@ class MyType:
         while idx < limit_len:
             if idx+100 >= limit_len:
                 self.TxtDict.add_text("Key2000Txt", str(self.key2000List[idx:])[1:-1]+",\n")
+                break
             self.TxtDict.add_text("Key2000Txt", str(self.key2000List[idx:idx+100])[1:-1]+",\n")
             idx += 100
 
@@ -720,6 +749,7 @@ class MyType:
         while idx < limit_len:
             if idx+100 >= limit_len:
                 self.TxtDict.add_text("Key2000LenTxt", str(self.key2000Length[idx:])[1:-1]+",\n")
+                break
             self.TxtDict.add_text("Key2000LenTxt", str(self.key2000Length[idx:idx+100])[1:-1]+",\n")
             idx += 100
 
@@ -731,12 +761,14 @@ class MyType:
         mykeys = [x//100 for x in sorted(self.TriggerDict.keys())]
         mykeys = list(set(mykeys))
 
-        for key in sorted(self.TriggerDict.keys()):
+        idx_end = len(self.TriggerDict.keys())
+        for idx, key in enumerate(sorted(self.TriggerDict.keys())):
             for val in self.TriggerDict[key]:
                 if (check_key != (key // 250)) and (key >= 50000):
                     check_key = key // 250
                     self.TxtDict.add_text("TriggerTxt", "\n")
-                self.TxtDict.add_text(f"{val}: {key}\n") 
+                self.TxtDict.add_text("TriggerTxt", f"{val}: {key}\n") 
+            print(f"{idx:03} / {idx_end:03}")
 
         self.TxtDict.set_init("Song1Txt", self.txtpath + "\\" + "노래 정보 1.txt")
         self.TxtDict.set_init("Song2Txt", self.txtpath + "\\" + "노래 정보 2.txt")
@@ -744,16 +776,24 @@ class MyType:
         self.TxtDict.set_init("Song4Txt", self.txtpath + "\\" + "노래 정보 4.txt")
         self.TxtDict.set_init("Song5Txt", self.txtpath + "\\" + "노래 정보 5.txt")
         self.TxtDict.set_init("Song6Txt", self.txtpath + "\\" + "노래 정보 6.txt")
-        self.TxtDict.set_init("Song7Txt", self.txtpath + "\\" + "노래 정보 7.txt")
 
-        self.TxtDict.set_init("LengthTxt", self.txtpath + "\\" + "노래 길이.txt")
+        self.TxtDict.set_init("SongLengthTxt", self.txtpath + "\\" + "노래 길이.txt")
 
-        self.TxtDict.set_init("SongHint1Txt", self.txtpath + "\\" + "노래 초성 - 1 번째.txt")
-        self.TxtDict.set_init("SongHint2Txt", self.txtpath + "\\" + "노래 초성 - 2 번째.txt")
-        self.TxtDict.set_init("SongHint3Txt", self.txtpath + "\\" + "노래 초성 - 3 번째.txt")
+        self.TxtDict.set_init("SongAnswerTxt", self.txtpath + "\\" + "정답 시 - 노래 (노래정보 1 & 2 합진 것).txt")
+        self.TxtDict.set_init("SongTypeTxt", self.txtpath + "\\" + "정답 시 - 장르 (노래정보 6).txt")
+        self.TxtDict.set_init("SongSingerTxt", self.txtpath + "\\" + "정답 시 - 가수 (노래정보 7).txt")
 
-        self.TxtDict.set_init("SongAnswerTxt", self.txtpath + "\\" + "노래 정답 시 (노래정보 1 & 2 합진 것).txt")
+        self.TxtDict.set_init("ShowLyricsTxt", self.txtpath + "\\" + "가사 리스트.txt")
+        self.TxtDict.set_init("ShowBarTxt", self.txtpath + "\\" + "Bar 리스트.txt")
 
+        self.TxtDict.set_init("LyricLengthTxt", self.txtpath + "\\" + "가사 길이 리스트.txt")
+        self.TxtDict.set_init("LyricCountTxt", self.txtpath + "\\" + "가사 개수 리스트.txt")
+        self.TxtDict.set_init("LyricInitialTxt", self.txtpath + "\\" + "가사 초기 상태 리스트.txt")
+
+        self.TxtDict.set_init("LyricSettingTxt", self.txtpath + "\\" + "가사 줄 리스트.txt")
+        self.TxtDict.set_init("LyricSettingLengthTxt", self.txtpath + "\\" + "가사 줄 길이 리스트.txt")
+
+        self.TxtDict.add_list("LyricCountTxt", 0)
 
         self.keylist = sorted(self.MyDict.songDict.keys())
         for key in self.keylist:
@@ -765,68 +805,89 @@ class MyType:
                 val = f"{val}({vals[1]})"
 
             if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
+                mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
             else:
-                mytext = "Db('{}'), ".format(val)
+                mytext = "Db('{}'), ".format(replace_show(val))
             self.TxtDict.add_text("SongAnswerTxt", str(mytext))
 
             val = vals[0]
             if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
+                mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
             else:
-                mytext = "Db('{}'), ".format(val)
+                mytext = "Db('{}'), ".format(replace_show(val))
             self.TxtDict.add_text("Song1Txt", str(mytext))
 
             val = vals[1]
             if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
+                mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
             else:
-                mytext = "Db('{}'), ".format(val)
+                mytext = "Db('{}'), ".format(replace_show(val))
             self.TxtDict.add_text("Song2Txt", str(mytext))
 
             val = vals[2]
             if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
+                mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
             else:
-                mytext = "Db('{}'), ".format(val)
+                mytext = "Db('{}'), ".format(replace_show(val))
             self.TxtDict.add_text("Song3Txt", str(mytext))
 
             val = vals[3]
             if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
+                mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
             else:
-                mytext = "Db('{}'), ".format(val)
+                mytext = "Db('{}'), ".format(replace_show(val))
             self.TxtDict.add_text("Song4Txt", str(mytext))
 
             val = vals[4]
             if "'" in val:
-                mytext = 'Db("{}"), '.format(val.replace('"', "\\\""))
+                mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
             else:
-                mytext = "Db('{}'), ".format(val)
+                mytext = "Db('{}'), ".format(replace_show(val))
             self.TxtDict.add_text("Song5Txt", str(mytext))
 
-            val = "{}, ".format(round(ASDF.time[1] - ASDF.time[0]))
-            self.TxtDict.add_text("LengthTxt", str(val))
-
-            vals = ASDF.hint
-
-            if "'" in vals[0]:
-                mytext = 'Db("{}"), '.format(vals[0].replace('"', "\\\""))
+            val = vals[5]
+            if "'" in val:
+                mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
             else:
-                mytext = "Db('{}'), ".format(vals[0])
-            self.TxtDict.add_text("SongHint1Txt", str(mytext))
+                mytext = "Db('{}'), ".format(replace_show(val))
+            self.TxtDict.add_text("SongTypeTxt", str(mytext))
 
-            if "'" in vals[1]:
-                mytext = 'Db("{}"), '.format(vals[1].replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(vals[1])
-            self.TxtDict.add_text("SongHint2Txt", str(mytext))
+            self.TxtDict.add_list("LyricCountTxt", self.TxtDict.return_list("LyricCountTxt", -1) + len(ASDF.cuts))
 
-            if "'" in vals[2]:
-                mytext = 'Db("{}"), '.format(vals[2].replace('"', "\\\""))
-            else:
-                mytext = "Db('{}'), ".format(vals[2])
-            self.TxtDict.add_text("SongHint3Txt", str(mytext))
+            self.TxtDict.add_text("ShowLyricsTxt", "[")
+            self.TxtDict.add_text("ShowBarTxt", "[")
+
+            for idx, asdf in ASDF.cuts.items():
+                val = asdf.singer
+                if "'" in val:
+                    mytext = 'Db("{}"), '.format(replace_show(val).replace('"', "\\\""))
+                else:
+                    mytext = "Db('{}'), ".format(replace_show(val))
+                self.TxtDict.add_text("Song6Txt", str(mytext))
+                self.TxtDict.add_text("SongSingerTxt", str(mytext))
+
+                val = "{}, ".format(round(asdf.time[1] - asdf.time[0]))
+                self.TxtDict.add_text("SongLengthTxt", str(val))
+
+                val = ['Db("{}"), '.format(replace_show(x).replace('"', "\\\"")) for x in asdf.show_lyrics_answer]
+                mytext = "".join(val) + ',\n'
+                self.TxtDict.add_text("ShowLyricsTxt", str(mytext))
+
+                val = ['Db("{}"), '.format(replace_show(x).replace('"', "\\\"")) for x in asdf.show_lyrics_bar]
+                mytext = "".join(val) + ',\n'
+                self.TxtDict.add_text("ShowBarTxt", str(mytext))
+
+                val = "{}, ".format(asdf.lyrics_length)
+                self.TxtDict.add_text("LyricLengthTxt", str(val))
+
+                val = "{},\n".format(asdf.lyrics_init_state)
+                self.TxtDict.add_text("LyricInitialTxt", str(val))
+
+                val = "{}, ".format(asdf.lyrics_line)
+                self.TxtDict.add_text("LyricSettingTxt", str(mytext))
+
+                val = "{}, ".format(asdf.lyrics_line_length)
+                self.TxtDict.add_text("LyricSettingLengthTxt", str(mytext))
 
         self.TxtDict.add_text("TriggerTxt", "\n!강퇴1: 1990\n!강퇴2: 1991\n!강퇴3: 1992\n!강퇴4: 1993\n!강퇴5: 1994\n!강퇴6: 1995\n!강퇴7: 1996\n")
 
@@ -862,11 +923,16 @@ class MyType:
             if in_data.isdigit():
                 SI = int(in_data)
 
-        for now, elememtKey in enumerate(sorted(self.MyDict.songDict.keys())):
+        now = 0
+        for now1, elememtKey in enumerate(sorted(self.MyDict.songDict.keys())):
             song = self.MyDict.songDict[elememtKey]
 
-            in_dict = {"addr":song.address, "SongName":song.basic_info[0], "idx1":song.idx1, "idx2":song.idx2, "now":now, "total":self.MyDict.Scount}
-            self.YouTubeDownload(**in_dict)
+            for now2, cutKey in enumerate(sorted(song.cuts.keys())):
+                cut = song[cutKey]
+
+                now += 1
+                in_dict = {"addr":cut.address, "SongName":song.basic_info[0], "idx1":song.idx1, "idx2":cut.idx2, "now":now, "total":self.MyDict.Lcount}
+                self.YouTubeDownload(**in_dict)
 
         if self.download_failed:
             with open(rootChanger(self.txtpath + "\\" + "다운로드 이슈.txt"), "w", encoding="utf-8") as f:
@@ -878,10 +944,15 @@ class MyType:
 
         print(DeleteAllFiles(self.wavpath + "\\cut", ".wav"))
 
-        for now, elememtKey in enumerate(sorted(self.MyDict.songDict.keys())):
+        now = 0
+        for now1, elememtKey in enumerate(sorted(self.MyDict.songDict.keys())):
             song = self.MyDict.songDict[elememtKey]
 
-            in_dict = {"addr":song.address, "SongName":song.basic_info[0], "idx1":song.idx1, "idx2":song.idx2, "now": now, "total":self.MyDict.Scount, "cut1": song.time[0], "cut2": song.time[1], "SI":SI, "mono":isMono}
-            self.CutFile(**in_dict)
+            for now2, cutKey in enumerate(sorted(song.cuts.keys())):
+                cut = song[cutKey]
+
+                now += 1
+                in_dict = {"addr":cut.address, "SongName":song.basic_info[0], "idx1":song.idx1, "idx2":song.idx2, "now": now, "total":self.MyDict.Lcount, "cut1": cut.time[0], "cut2": cut.time[1], "SI":SI, "mono":isMono}
+                self.CutFile(**in_dict)
 
 
