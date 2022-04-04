@@ -19,6 +19,9 @@ var setting3			= 0; //장르힌트
 var setting4			= 0; //초성힌트
 var setting5			= 1; //짧게듣기
 
+var selectContinue = 0; // 확인 버튼 눌렀는지 여부
+var screenChanged = 0; // 화면 바꿨는가 여부
+
 //===================옵션 이름을 바꾸고 싶을 땐 여기서 수정해주세요 !!!=============================
 const settingName1	= Db("음악정답"); //설정1의 설정이름값
 const settingName2	= Db("스킵기능"); //설정2의 설정이름값
@@ -29,15 +32,29 @@ const settingName5 = Db("짧게듣기"); //설정5의 설정이름값
 
 // 0 ~ 36(1초): 파일 불러오기
 // 37 ~ 216(5초): op
-// 217 ~ 251(1초): 설명
-// 252: 버튼 누르기
-// 253 ~ 287(1초): 곡수 설정
-// 288: 버튼 누르기
-// 289 ~ 323(1초): 기본 설정
-// 324: 버튼 누르기 → 3601으로 이동
+// 216 ~ 251(1초): 설명
+// 251: 버튼 누르기
+// 252: 분기점
+
+// 253 ~ 287(1초): 카테고리 설정
+// 287: 버튼 누르기
+// 288: 분기점
+
+// 289 ~ 323(1초): 곡수 설정
+// 323: 버튼 누르기
+// 324: 분기점
+
+// 325 ~ 359(1초): 기본 설정
+// 359: 버튼 누르기
+// 360: 분기점  → 3600으로 이동
+
+// 3600: 분기점
 // 3601 ~ 3635(1초): DEBUG 확인 질문
-// 3636: 버튼 누르기 → 9001으로 이동
-// 9001 ~ 9180(5초): end
+// 3635: 버튼 누르기
+// 3636: 분기점 → 9001으로 이동
+
+// 9001 ~ 9179(5초): end
+// 9180: 분기점  → 10000으로 이동
 
 //참고로 이런 초록색 글씨들은 주석으로, 게임에 영향을 미치지 않습니다. 설명용 글이라고 해야할까요?
 function openingMouse1(cp);
@@ -58,75 +75,123 @@ function OpeningText(cp){
 		SetDeaths(cp, SetTo, 999, ms.MUSIC);
 		BGM.SetBGM(0);
 	}
-	
+	// 오프닝 부분
 	if(36 < opening[cp] && opening[cp] < 216){
 		if(IsUserCP()){
 			s.insert(0); //오프닝 타이틀
 			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
-			s.append("\n\n");
+			s.append("\n");
 			s.append("\x13\x1E[EUD]\n");
-			s.append("\x13\x11음악 퀴즈 오픈소스\n");
-			s.append("\x13\x04오픈소스 제작 : Avlos(갈대)\n");
-			s.append("\n\n");
+			s.append("\x13\x11음악 퀴즈 오픈소스 - Type01\n\n");
+			s.append("\x13\x04오픈소스 제작 :Avlos(갈대) / 오픈소스 수정: WIGHT\n");
+			s.append("\x13\x04제작: WIGHT\n");
 			s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
 			s.DisplayAt(0);
 		}
 	}
 	
-	if(opening[cp] == 217){SetDeaths(cp, SetTo, 3, ms.EFFECT);}
-	if(opening[cp] > 216 && opening[cp] < 432){
-		if(IsUserCP()){
-			s.insert(0); //오프닝 설명
-			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
-			s.append("\n\n");
-			s.append("\x13\x1E이 유즈맵\x04은 들려오는 음악을 듣고, \x1F채팅\x04으로 음악을 맞히면 됩니다.\n");
-			s.append("\x13\x1B힌트\x04는 한 곡당 \x112번 \x04제공되며, 설정에 따라 제공되지 않을 수 있습니다.\n");
-			s.append("\x13\x17음악 장르\x04는 \x1E외국영화, 애니OST, 드라마, 게임OST\x04로 나뉩니다.\n");
-			s.append("\n\n");
-			s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
-			s.DisplayAt(0);
+	if(opening[cp] == 217){SetDeaths(cp, SetTo, 3, ms.EFFECT); TextUpdate[cp] = 1;}
+
+	if(216 < opening[cp] && opening[cp] <= 251){
+		if(TextUpdate[cp] == 1){
+			TextUpdate[cp] = 0;
+			if(IsUserCP()){
+				s.insert(0); //오프닝 설명
+				s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+				s.append("\n");
+				s.append("\x13\x1E이 유즈맵\x04은 들려오는 음악을 듣고, \x1F채팅\x04으로 음악을 맞히면 됩니다.\n");
+				s.append("\x13\x1B힌트\x04는 한 곡당 \x112번 \x04제공되며, 설정에 따라 제공되지 않을 수 있습니다.\n");
+				s.append("\x13\x17음악 장르\x04는 \x1EVOCALOID 노래\x04입니다.\n");
+				s.append("\n");
+				if(opening[cp] == 251){s.append("\x07[ 다음(→) ]");}
+				s.append("\n");
+				s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+				s.DisplayAt(0);
+			}
 		}
 	}
-	if(opening[cp] == 503){
-		if(ms.MusicSelect == 0){opening[cp] = 684;}
-		TextUpdate[cp] = 1;
+	if(opening[cp] == 251){
+		if(sys.setUser == cp){openingMouse0(cp);}
+		if(screenChanged == 0){
+			screenChanged = 1;
+			TextUpdate[cp] = 1;
+		}
 	}
-	if(opening[cp] == 504){
+	if(opening[cp] == 252){
+		if(ms.CategorySelect == 0){opening[cp]=288;}
+		else{opening[cp] += 1;}
+	}
+
+	// 카테고리 부분 (Type01에서는 사용하지 않습니다. 호환성을 위한 부분.)
+	if(253 < opening[cp] && opening[cp] <= 287){
+		if(sys.setUser == cp){openingMouse1(cp);}
 		if(TextUpdate[cp] == 1){
 			TextUpdate[cp] = 0;
 			if(IsUserCP()){
 				s.insert(0); //곡 세팅
 				s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
-				s.append("\x13", PColor(sys.setUser), PName(sys.setUser),"\x04님이 몇곡으로 진행할지 설정합니다.\n");
+				s.append("\x13", PColor(sys.setUser), PName(sys.setUser),"\x04님이 카테고리를 설정합니다.\n");
 				s.append("\x13\x19설정\x04은 \x1E마우스 클릭\x04으로 진행할 수 있습니다.\n");
 				s.append("\n");
-				s.append("\x13\x11\x1F[--  \x04",ms.musicNum1, "곡  \x1F--]\n");
+				/*s.append("\x13\x11\x1F[--  \x04",ms.musicNum1, "곡  \x1F--]\n");
 				s.append("\x13\x11\x1F[--  \x04",ms.musicNum2, "곡  \x1F--]\n");
 				s.append("\x13\x11\x1F[--  \x04",ms.musicNum3, "곡  \x1F--]\n");
-				s.append("\x13\x11\x1F[--  \x04",ms.musicNum4, "곡  \x1F--]\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum4, "곡  \x1F--]\n");*/
 				s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+				s.DisplayAt(0);
 			}
 		}
-		if(IsUserCP()){s.DisplayAt(0);}
-		eprintln("\x1D( \x04전체 곡 중 지정된 일부 곡만 재생합니다. \x1D)");
+		eprintln("\x1D( \x04전체 곡 중 선택한 카테고리만 재생합니다. \x1D)");
 		//eprintln("X:", fc.mX[cp], "  Y:", fc.mY[cp]);
-		if(sys.setUser == cp){openingMouse1(cp);}
 	}
-	if(opening[cp] > 504 && opening[cp] < 684){
-		if(IsUserCP()){
-			s.insert(0); //세팅 종료 후 멘트
-			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
-			s.append("\n\n");
-			s.append("\x13\x1F",mp.MusicNumber2,"곡\x04으로 설정되었습니다.\n");
-			s.append("\x13\x04전체곡 중에서 ",mp.MusicNumber2,"곡이 \x19랜덤하게 \x04등장합니다.\n");
-			s.append("\x13\x02여담으로, 많은 음악퀴즈맵들은 \x04https://cafe.naver.com/edac\x02에서 받을 수 있습니다!\n");
-			s.append("\n\n");
-			s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
-			s.DisplayAt(0);
+	if(opening[cp] == 287){
+		if(sys.setUser == cp){openingMouse0(cp);}
+		if(screenChanged == 0){
+			screenChanged = 1;
+			TextUpdate[cp] = 1;
 		}
 	}
-	if(opening[cp] == 683){TextUpdate[cp] = 1;}
-	if(opening[cp] == 684){
+	if(opening[cp] == 288){
+		if(ms.MusicSelect == 0){opening[cp]=324;}
+		else{opening[cp] += 1;}
+	}
+
+	// 곡수 부분
+	if(288 < opening[cp] && opening[cp] <= 323){
+		if(sys.setUser == cp){openingMouse2(cp);}
+		if(TextUpdate[cp] == 1){
+			TextUpdate[cp] = 0;
+			if(IsUserCP()){
+				s.insert(0); //곡 세팅
+				s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+				s.append("\x13", PColor(sys.setUser), PName(sys.setUser),"\x04님이 곡수를 설정합니다.\n");
+				s.append("\x13\x19설정\x04은 \x1E마우스 클릭\x04으로 진행할 수 있습니다.\n");
+				s.append("\n");
+				/*s.append("\x13\x11\x1F[--  \x04",ms.musicNum1, "곡  \x1F--]\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum2, "곡  \x1F--]\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum3, "곡  \x1F--]\n");
+				s.append("\x13\x11\x1F[--  \x04",ms.musicNum4, "곡  \x1F--]\n");*/
+				s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+				s.DisplayAt(0);
+			}
+		}
+		eprintln("\x1D( \x04전체 곡 중 선택한 카테고리만 재생합니다. \x1D)");
+		//eprintln("X:", fc.mX[cp], "  Y:", fc.mY[cp]);
+	}
+	if(opening[cp] == 323){
+		if(sys.setUser == cp){openingMouse0(cp);}
+		if(screenChanged == 0){
+			screenChanged = 1;
+			TextUpdate[cp] = 1;
+		}
+	}
+	if(opening[cp] == 324){
+		opening[cp] += 1;
+	}
+
+	// 기본설정 부분
+	if(325 < opening[cp] && opening[cp] <= 359){
+		if(sys.setUser == cp){openingMouse3(cp);}
 		if(TextUpdate[cp] == 1){
 			TextUpdate[cp] = 0;
 			if(IsUserCP()){
@@ -143,11 +208,60 @@ function OpeningText(cp){
 				s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
 			}				//음악정답, 스킵기능 쪽 텍스트는 건드리지마시고, 힌트의 내용을 바꾸고 싶을 땐 위로 올라가서 settingName 변수에 있는 텍스트를 수정하세요.
 		}
-		if(IsUserCP()){s.DisplayAt(0);}
+		eprintln("\x1D( \x04전체 곡 중 선택한 카테고리만 재생합니다. \x1D)");
 		//eprintln("X:", fc.mX[cp], "  Y:", fc.mY[cp]);
-		if(sys.setUser == cp){openingMouse2(cp);}
 	}
-	if(opening[cp] > 684 && opening[cp] < 971){
+
+	if(opening[cp] == 359){
+		if(sys.setUser == cp){openingMouse0(cp);}
+		if(screenChanged == 0){
+			screenChanged = 1;
+			TextUpdate[cp] = 1;
+		}
+	}
+	if(opening[cp] == 360){
+		opening[cp] = 3600;
+	}
+
+	// DEBUG 부분
+	if(opening[cp] == 3600){
+		if(ms.DebugSelect == 0){opening[cp] = 9001;}
+		else{opening[cp] += 1;}
+	}
+	if(3601 < opening[cp] && opening[cp] <= 3635){
+		if(sys.setUser == cp){openingMouse4(cp);}
+		if(TextUpdate[cp] == 1){
+			TextUpdate[cp] = 0;
+			if(IsUserCP()){
+				s.insert(0); //게임 셋팅 PColor(sys.setUser), PName(sys.setUser)가 세팅을 진행하는 유저이름 출력부분입니다.
+				s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
+				s.append("\x13", PColor(sys.setUser), PName(sys.setUser),"\x04님이 기본설정을 진행합니다.\n");
+				s.append("\x13\x19설정\x04은 \x1E마우스 클릭\x04으로 진행할 수 있습니다.\n");
+				s.append("\n");
+				s.append("\x13\x11",ptr2s(settingName1)," ", ptr2s(onoffText1[setting1]), "	\x11",ptr2s(settingName2)," ", ptr2s(onoffText2[setting2]), "\n");
+				s.append("\x13\x11",ptr2s(settingName3)," ", ptr2s(onoffText1[setting3]), "	\x11",ptr2s(settingName4)," ", ptr2s(onoffText1[setting4]), "\n");
+				if(ms.MusicShort == 1){s.append("\x13\x11",ptr2s(settingName5)," ", ptr2s(onoffText3[setting5]), "	\x14",ptr2s(settingName5)," ", ptr2s(onoffText3[setting5]), "\n");}
+				else{s.append("\x13\n");}
+				s.append("\x13\x1D설정완료\n");
+				s.append("\x13\x19┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+			}				//음악정답, 스킵기능 쪽 텍스트는 건드리지마시고, 힌트의 내용을 바꾸고 싶을 땐 위로 올라가서 settingName 변수에 있는 텍스트를 수정하세요.
+		}
+		eprintln("\x1D( \x04전체 곡 중 선택한 카테고리만 재생합니다. \x1D)");
+		//eprintln("X:", fc.mX[cp], "  Y:", fc.mY[cp]);
+	}
+	if(opening[cp] == 3635){
+		if(sys.setUser == cp){openingMouse0(cp);}
+		if(screenChanged == 0){
+			screenChanged = 1;
+			TextUpdate[cp] = 1;
+		}
+	}
+	if(opening[cp] == 3636){
+		opening[cp] = 9001;
+	}
+
+	// 셋팅 종료
+	if(9000 < opening[cp] && opening[cp] <= 9179){
 		if(IsUserCP()){
 			s.insert(0); //세팅 종료 후 멘트
 			s.append("\x13\x19┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n");
@@ -160,11 +274,29 @@ function OpeningText(cp){
 			s.DisplayAt(0);
 		}
 	}
-	if(opening[cp] == 972){
+	if(opening[cp] == 9180){
 		opening[cp] = 10000; //게임시작 세팅입니다.
 		DisplayText("\n\n\n\n\n\n\n\n\n\n", 4);
 		ms.LeaderBoardTrigger();
 		if(mp.MusicStep == 0){SetVariables(mp.MusicStep, 1);}
+	}
+}
+
+function openingMouse0(cp){
+	fc.mouseTrack(cp);
+	const mmX, mmY = fc.mX[cp], fc.mY[cp];
+	var conditionA = false;
+	if (Deaths(cp, Exactly, 1, ms.MUSIC)){
+		if (4075 <= mmX && mmX <= 4118 && 4129 <= mmY && mmY <= 4140){
+			conditionA = true;
+		}
+	}
+	const conditionB = Deaths(cp, Exactly, 1, ms.RIGHT)
+
+	if(conditionA || conditionB){
+		SetDeaths(Force1, SetTo, 2, ms.EFFECT);
+		foreach(p : EUDLoopPlayer('Human')){opening[p] += 1; TextUpdate[p] = 1;}
+		screenChanged = 0;
 	}
 }
 

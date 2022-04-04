@@ -249,31 +249,69 @@ class TxtDict:
 
     def set_init(self, name, link):
         self.Dict[name] = {}
-        self.Dict[name]["text"] = ""
-        self.Dict[name]["link"] = rootChanger(link)
         self.Dict[name]["list"] = []
+        self.Dict[name]["link"] = rootChanger(link)
+        self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
+        self.Dict[name]["wantWrite"] = False
 
-    def add_list(self, name, data):
+    def set_write(self, name, boolean):
+        self.Dict[name]["wantWrite"] = boolean
+
+    def set_write_all(self, boolean):
+        for name in self.Dict.keys():
+            self.Dict[name]["wantWrite"] = boolean
+
+    def append_list(self, name, data):
+        if name not in self.Dict.keys():
+            self.Dict[name] = {}
+            self.Dict[name]["link"] = rootChanger(f".\\{name}")
+            self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
+
         self.Dict[name]["list"].append(data)
+
+    def extend_list(self, name, data):
+        if name not in self.Dict.keys():
+            self.Dict[name] = {}
+            self.Dict[name]["link"] = rootChanger(f".\\{name}")
+            self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
+
+        self.Dict[name]["list"].extend(data)
 
     def add_text(self, name, text):
         if name not in self.Dict.keys():
             self.Dict[name] = {}
-            self.Dict[name]["text"] = ""
             self.Dict[name]["link"] = rootChanger(f".\\{name}")
+            self.Dict[name]["file"] = open(self.Dict[name]["link"], "w", encoding="utf-8")
         
-        self.Dict[name]["text"] += text
+        self.Dict[name]["file"].write(text)
 
-    def return_text(self, name):
-        return self.Dict[name]["text"]
+    def get_link(self, name):
+        return self.Dict[name]["link"]
+
+    def return_list(self, name, idx1=None, idx2=None):
+        if idx1 == None:
+            return self.Dict[name]["list"]
+        elif idx2 == None:
+            return self.Dict[name]["list"][idx1]
+        return self.Dict[name]["list"][idx1:idx2]
+
+    def close_file(self, name):
+        self.Dict[name]["file"].close()
+        self.Dict[name]["file"] = None
+
+    def close_all_file(self):
+        for name in self.Dict.keys():
+            if self.Dict[name]["file"]:
+                self.close_file(name)
 
     def write_text(self):
         for name in self.Dict.keys():
-            with open(self.Dict[name]["link"], "w", encoding="utf-8") as f:
-                if self.Dict[name]["text"]:        
-                    f.write(self.Dict[name]["text"])
-                else:
-                    f.write(str(self.Dict[name]["list"])[1:-1])
+            if self.Dict[name]["wantWrite"] == False:
+                self.Dict[name]["file"].close()
+                DeleteFile(self.Dict[name]["link"])
+            elif self.Dict[name]["list"]:
+                if self.Dict[name]["wantWrite"]:
+                    self.Dict[name]["file"].write(str(self.Dict[name]["list"])[1:-1])
 
 
 class MyType:
@@ -331,7 +369,10 @@ class MyType:
         if "nicovideo" in addr:
             filename = f"{addr.split('watch/')[1]}.wav"
         else:
-            filename = f"{addr.split('?v=')[1].split('&list=')[0]}.wav"
+            if "youtu.be/" in addr:
+                filename = f"{addr.split('youtu.be/')[1].split('&')[0]}.wav"
+            elif "youtube":
+                filename = f"{addr.split('?v=')[1].split('&')[0]}.wav"
         filepath = self.orgpath + filename
 
         if isfile(filepath):
@@ -347,7 +388,7 @@ class MyType:
                     return
 
         # 유튜브 주소 기반 다운로드
-        if "youtube" in addr:
+        if "youtube" in addr or "youtu.be/" in addr:
             if isfile(filepath):
                 print(f"{filename} is already exist.")
             else:
@@ -424,8 +465,10 @@ class MyType:
         elif "nicovideo" in addr:
             filename = f"{addr.split('watch/')[1]}.wav"
         else:
-            filename = f"{addr.split('?v=')[1].split('&list=')[0]}.wav"
-
+            if "youtu.be/" in addr:
+                filename = f"{addr.split('youtu.be/')[1].split('&')[0]}.wav"
+            elif "youtube":
+                filename = f"{addr.split('?v=')[1].split('&')[0]}.wav"
         length = round(cut2 - cut1, 5)
 
         filename2 = f'{idx:03}.wav'
@@ -635,9 +678,11 @@ class MyType:
         if not key10000:
             key10000 = [0]
 
-        self.TxtDict.set_init("Key10000Txt", rootChanger(self.txtpath + "\\" + "Key10000.txt"))
-        self.TxtDict.add_text("Key10000Txt", str(key10000L) + "\n\n")
-        self.TxtDict.add_text("Key10000Txt", str(key10000))
+        self.TxtDict.set_init("key10000ListTxt", rootChanger(self.txtpath + "\\" + "key10000List.txt"))
+        self.TxtDict.extend_list("key10000ListTxt", key10000)
+        
+        self.TxtDict.set_init("key10000LengthTxt", rootChanger(self.txtpath + "\\" + "key10000Length.txt"))
+        self.TxtDict.extend_list("key10000LengthTxt", key10000L)
 
         self.TxtDict.set_init("Song1Txt", rootChanger(self.txtpath + "\\" + "노래 정보 1.txt"))
         self.TxtDict.set_init("Song2Txt", rootChanger(self.txtpath + "\\" + "노래 정보 2.txt"))
@@ -732,7 +777,7 @@ class MyType:
             self.TxtDict.add_text("Hint3Txt", str(mytext))
 
             val = ASDF.idx2
-            self.TxtDict.add_text("CateListTxt", str(mytext))
+            self.TxtDict.add_text("CateListTxt", "{}, ".format(val))
 
         self.keylist = sorted(self.MyDict.cateDict.keys())
 
@@ -747,14 +792,20 @@ class MyType:
 
 
         self.TxtDict.add_text("TriggerTxt", "\n!강퇴1: 1990\n!강퇴2: 1991\n!강퇴3: 1992\n!강퇴4: 1993\n!강퇴5: 1994\n!강퇴6: 1995\n!강퇴7: 1996\n")
+        self.TxtDict.set_write_all(True)
+        
+        return True
 
     def Running(self):
         wantDL = None
         isMono = None
 
         self.ReadData()
-        self.MakeTxt()
+        if not self.MakeTxt():
+            return
         self.TxtDict.write_text()
+        self.TxtDict.close_all_file()
+        self.make_config()
 
 
         while (wantDL == None):
@@ -805,3 +856,68 @@ class MyType:
             idx+= 1
             in_dict = {"addr":song.address, "SongName":song.basic_info[0], "idx":idx, "total":self.MyDict.Scount, "cut1": song.time[0], "cut2": song.time[1], "SI":SI, "mono":isMono}
             self.CutFile(**in_dict)
+
+
+    def make_config(self):
+        print(DeleteAllFiles(rootChanger(self.txtpath), ".eps"))
+        with open(rootChanger(self.txtpath + "\\" + "musicConfig.eps"), "w", encoding="utf-8") as f:
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("Song3Txt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const MusicHint1 = [{mytext}];\n\n")
+
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("Song4Txt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const MusicHint2 = [{mytext}];\n\n")
+            
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("Hint1Txt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const ConsonantHint1 = [{mytext}];\n\n")
+            
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("Hint2Txt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const ConsonantHint2 = [{mytext}];\n\n")
+            
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("Hint3Txt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const ConsonantHint3 = [{mytext}];\n\n")
+
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("SongAnswerTxt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const MusicAnswer = [{mytext}];\n\n")
+            
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("LengthTxt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const MusicLength = [{mytext}];\n\n")
+            
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("key10000ListTxt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const key10000List = [{mytext}];\n\n")
+            
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("key10000LengthTxt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const key10000Length = [{mytext}];\n\n")
+
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("CateListTxt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const CateList = [{mytext}];\n\n")
+
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("CateNameTxt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const CateName = [{mytext}];\n\n")
+
+            mytext = ""
+            with open(rootChanger(self.TxtDict.get_link("CateLengthTxt")), "r", encoding="utf-8") as f1:
+                mytext = "".join(f1.readlines())
+            f.write(f"const CateLength = [{mytext}];\n\n")
+
