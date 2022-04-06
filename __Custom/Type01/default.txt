@@ -1,0 +1,101 @@
+customname = "DEFAULT";
+ReadInfo = [
+    {
+        "sheetName": "Main",
+        "function": "readSong",
+        "range": ["start", "end"],
+        "column: [
+            {
+                "idx_column": 0,
+                "name": "idx",
+            },
+            {
+                "idx_column": 1,
+                "name": "musicinfo1",
+            },
+            {
+                "idx_column": 2,
+                "name": "musicinfo2",
+            },
+            {
+                "idx_column": 3,
+                "name": "musicinfo3",
+            },
+            {
+                "idx_column": 4,
+                "name": "musicinfo4",
+            },
+            {
+                "idx_column": 5,
+                "name": "musicinfo5",
+            },
+            {
+                "idx_column": 6,
+                "name": "address",
+            },
+            {
+                "idx_column": 7,
+                "name": "t1",
+            },
+            {
+                "idx_column": 8,
+                "name": "t2",
+            },
+        ],
+        "readStart": 9,
+    },
+];
+writeInfo = [
+    {
+        "name": "musicInfo1",
+        "write": "노래 정보 1.txt",
+        "type": "musicInfo1",
+    },
+    {
+        "name": "musicInfo2",
+        "write": "노래 정보 2.txt",
+        "type": "musicInfo2",
+    },
+    {
+        "name": "musicInfo3",
+        "write": "노래 정보 3.txt",
+        "type": "musicInfo3",
+    },
+    {
+        "name": "musicInfo4",
+        "write": "노래 정보 4.txt",
+        "type": "musicInfo4",
+    },
+    {
+        "name": "musicInfo5",
+        "write": "노래 정보 5.txt",
+        "type": "musicInfo5",
+    },
+    {
+        "name": "musicLength",
+        "write": "노래 길이.txt",
+        "type": "musicLength",
+        "args": 1,
+    },
+    {
+        "name": "musiconsonantHint1",
+        "write": "초성 - 1 번째.txt",
+        "type": "consonantHint",
+        "args": "_",
+    },
+    {
+        "name": "musiconsonantHint2",
+        "write": "초성 - 2 번째.txt",
+        "type": "consonantHint",
+        "args": "*___",
+    },
+    {
+        "name": "musiconsonantHint3",
+        "write": "초성 - 3 번째.txt",
+        "type": "consonantHint",
+        "args": "*_",
+    },
+];
+configInfo = [
+
+];
