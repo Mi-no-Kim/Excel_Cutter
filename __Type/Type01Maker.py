@@ -1,9 +1,20 @@
-CUSTOM_NAME = "DEFAULT"
-READ_INFO = [
+import pickle as pk
+
+class Info():
+    def __init__(self):
+        self.idx = 1
+        self.info = "기본성능"
+        self.last_date = "2022/04/17"
+
+pk.dump()
+
+PICKLE_DEFAULT = '''customname = "DEFAULT";
+ReadInfo = [
     {
         "sheetName": "Main",
         "function": "readSong",
-        "column": [
+        "range": ["start", "end"],
+        "column: [
             {
                 "idx_column": 0,
                 "name": "idx",
@@ -41,16 +52,14 @@ READ_INFO = [
                 "name": "t2",
             },
         ],
-        "readStart": 10,
-        "askRange": True
+        "readStart": 9,
     },
-]
-WRITE_INFO = [
+];
+writeInfo = [
     {
         "name": "musicInfo1",
         "write": "노래 정보 1.txt",
-        "func": "musicInfo",
-        "args": ["musicinfo1"]
+        "type": "musicInfo",
     },
     {
         "name": "musicInfo2",
@@ -75,8 +84,8 @@ WRITE_INFO = [
     {
         "name": "MusicAnswer",
         "write": "정답 시 (노래정보 1 & 2 합진 것).txt",
-        "type": "musicInfoConjoinDelete()",
-        "args": ["musicInfo1", "musicInfo2"]
+        "type": "musicInfoConjoin()",
+        "args": ["musicInfo1", "musicInfo2",]
     },
     {
         "name": "musicLength",
@@ -127,8 +136,9 @@ WRITE_INFO = [
         "write": "!다운로드 이슈.txt",
         "type": "downloadCheck",
     },
-]
-CONFIG_INFO = [
+];
+configInfo = [
+{
     "MusicAnswer",
     "musicInfo3",
     "musicLength",
@@ -137,4 +147,5 @@ CONFIG_INFO = [
     "musicConsonantHint3",
     "duple",
     "dulpeLength",
-]
+];'''
+

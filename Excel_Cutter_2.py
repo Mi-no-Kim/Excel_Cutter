@@ -6,7 +6,7 @@ from os.path import exists, dirname, realpath
 from importlib import import_module
 
 from os import listdir, rename, scandir, remove
-from os.path import isdir, isfile, splitext
+from os.path import isdir, isfile, splitext, basename
 from shutil import copy2
 from matplotlib.pyplot import pause
 from yt_dlp import YoutubeDL
@@ -34,7 +34,9 @@ class MainProgram:
             return root
 
     def main(self):
+        print("\n" + "=" * 20)
         print(f"Excel Cutter {self.__version} Ver 입니다.")
+        print("\n" + "=" * 20)
         self.mypath = dirname(realpath(__file__))
 
         createFolder(self.rootChanger(f"{self.mypath}\\__XLSX"))
@@ -49,6 +51,7 @@ class MainProgram:
 
         self.txtpath = self.rootChanger(self.myoutputpath + "\\txt")
         self.wavpath = self.rootChanger(self.myoutputpath + "\\wav")
+        self.mappath = self.rootChanger(self.myoutputpath + "\\map")
 
         self.filepath = self.rootChanger(f"{self.myinputpath}\\{self.filename}")
 
@@ -59,6 +62,7 @@ class MainProgram:
 
         createFolder(self.txtpath)
         createFolder(self.wavpath)
+        createFolder(self.mappath)
 
         createFolder(self.rootChanger(self.wavpath + "\\" + "org"))
         createFolder(self.rootChanger(self.wavpath + "\\" + "cut"))
@@ -72,7 +76,7 @@ class MainProgram:
             if exists(self.rootChanger(f"{self.mypath}\\__Type\\" + pyName)):
                 self.typeArr.append(import_module("__Type." + pyName[:-3]))
 
-
+        print("\n" + "=" * 20)
         self.numArr = [str(x.num) for x in self.typeArr]
 
         # Type 선택 질문
@@ -91,6 +95,7 @@ class MainProgram:
                 self.typeArr[idx].platform = self.__platform
                 break
 
+        print("\n" + "=" * 20)
         # self.my_type.platform = self.__platform
         self.my_type.insert_defalut_data(self.wb, self.mypath, self.wavpath, self.txtpath)
 

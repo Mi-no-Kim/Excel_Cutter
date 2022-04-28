@@ -1,5 +1,5 @@
 from os import listdir, rename, scandir, remove
-from os.path import isdir, isfile, splitext
+from os.path import isdir, isfile, splitext, basename
 from platform import platform
 from shutil import copy2
 from matplotlib.pyplot import pause
@@ -12,219 +12,230 @@ from numpy import linspace
 from niconico_dl.video_manager import NicoNicoVideo
 from glob import glob
 
-
-temp = "기본성능 \t[22/02/26 수정]"
-num = 1
-platform = None
+from importlib import import_module
 
 
-def rootChanger(root):
-    if platform == "Linux":
-        return root.replace("\\", "/")
-    else:
-        return root
+class NotExistError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
 
 
-def DeleteAllFiles(filePath, ext):
-    """파일 전부 삭제"""
-    filePath = rootChanger(filePath)
-    if isdir(filePath):
-        for file in scandir(filePath):
-            if file.path[-len(ext):] == ext:
-                remove(file.path)
-        return 'Remove All File'
-    else:
-        return 'Directory Not Found'
+class DuplicateError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+class MismatchFunctionError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
 
 
-def DeleteFile(filePath):
-    """단일파일 삭제"""
-    filePath = rootChanger(filePath)
-    if isfile(filePath):
-        remove(filePath)
+class basicInfo:
+    def __init__(self):
+        self.num = 1
+        self.temp = "기본성능"
+        self.lastChanged = "22/02/26"
 
 
-# 초성 생성
-def checking(word):
-    """매 글자의 초성을 반환합니다."""
-    checklist = [
-        "까", "나", "다", "따", "라", "마", "바", "빠", "사", "싸", "아", "자", "짜", "차", "카", "타", "파", "하", "힣"]
-    returnlist = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ",
-                  "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
+class TypeFunction:
+    def __init__(self, functionPath):
+        self.totalDict = {}
+        self.answerTrigger = {}
+        self.functionPath = functionPath
 
-    if word < "가" or word > checklist[-1] or word == " ":
-        return word
+        self.Function = []
+        if isdir(functionPath):
+            for file in scandir(functionPath):
+                if file.path[3] == ".py":
+                    self.Function[basename(file.path)] = import_module(file.path)
 
-    if word.isalpha():
-        if 96 <= ord(word) <= 122 or 65 <= ord(word) <= 90:
-            return word
+    def makeDefault(self):
+        return DEFAULT
 
-    for idx, checkword in enumerate(checklist):
-        if word < checkword:
-            return returnlist[idx]
-
-
-# 전체 초성 변화
-def makehint(answer):
-    """
-    초성으로만 이루어진 것,
-    단어 1글자 + 초성 3개,
-    단어 1글자 + 초성 1개
-    """
-
-    hint = ""
-    for word in answer:
-        hint += checking(word)
-
-    hint2text = hint
-    hint3text = ""
-    hint4text = ""
-
-    if len(hint2text) == 1:
-        hint3text = hint2text
-        hint4text = hint2text
-    else:
-        k = 0
-        for a in range(len(hint2text)):
-            if k % 4:
-                if k % 2:
-                    hint4text += hint2text[a]
-                else:
-                    hint4text += answer[a]
-                hint3text += hint2text[a]
-            else:
-                hint3text += answer[a]
-                hint4text += answer[a]
-            if "가" <= answer[a] <= "힣":
-                k += 1
-
-    return hint2text, hint3text, hint4text
-
-
-# 소문자 변환
-def changeLowerAnswer(word):
-    """lower"""
-    new_word = "".join([w.lower() if 65<=ord(w)<=90 else w for w in str(word)])
-
-    return new_word
-
-
-# 대문자 변환
-def changeUpperAnswer(word):
-    """upper"""
-    new_word = "".join([w.upper() if 96<=ord(w)<=122 else w for w in str(word)])
-
-    return new_word
-
-
-# 그냥
-def nonChange(word):
-    """별 거 없음"""
-    return word
-
-
-# replace 뭉치
-def replace_show(word):
-    res = word
-    res = res.replace("\\","\\\\")
-    res = res.replace("“", "\"").replace("”",  "\"")
-    res = res.replace("‘", "\'").replace("’",  "\'")
-    res = res.replace("…", "...")
-
-    return res
-
-
-def replace_answer(word):
-    res = word
-    res = res.replace("\\","\\\\")
-    res = res.replace(":","\\:")
-    res = res.replace("“", "\"").replace("”",  "\"")
-    res = res.replace("‘", "\'").replace("’",  "\'")
-    res = res.replace("…", "...")
-    res = res.replace("=", "\\=")
-
-    return res
-
-
-# 답판정 변경
-def makeAnswer(word):
-    res = []
-
-    UpperFunction = [nonChange, changeUpperAnswer, changeLowerAnswer]
-    Spaceword = [replace_answer(str(word)), replace_answer(str(word)).replace(" ","")]
-
-    UpperSetting = [1, 1, 1]    # Org, Up, Down
-    SpaceSetting = [1, 1]       # Org, Off
-
-    for idx1, spcst in enumerate(SpaceSetting):
-        myword = Spaceword[idx1]
+    def setText(self, TXT):
+        necessarys = ["idx", "musicinfo1", "address", "t1", "t2", "answers"]
+        for necessary in necessarys:
+            if TXT.get(necessary) == None:
+                raise NotExistError(f"필수 요소인 {necessary}가 존재하지 않습니다.\n{necessarys}")
         
-        for idx2, upst in enumerate(UpperSetting):
+    def readData(self, data, function):
+        if function == "readSong":
+            idx = data["idx"]
+            keyname = f"{data['idx']:04}"
 
-            if spcst * upst == 0:
-                continue
+            if self.totalDict.get(keyname):
+                raise DuplicateError(f"At [{keyname}](idx: {idx}), key Duplicated")
 
-            myword2 = UpperFunction[idx2](myword)
-            if myword2 not in res and len(myword2.encode()) <= 78:
-                res.append(myword2)
+            self.totalDict[keyname] = {
+                k:v for k, v in data.items()
+            }
+        else:
+            raise MismatchFunctionError(f"FunctionName [{function}] 은 지원되지 않습니다.")
 
-    return tuple(res)
+    def makeData(self):
+        genreIdx = 2000
+
+        for numIdx, data in enumerate(self.totalDict.items()):
+            for cateIdx, answerlist in enumerate(data["answers"]):
+                for ansIdx, answer in enumerate(answerlist):
+                    for changedanswer in self.Function["word"].makeAnswer(answer):
+                        if self.answerTrigger.get(changedanswer) == None:
+                            self.answerTrigger[changedanswer] = []
+                        self.answerTrigger[changedanswer].append(genreIdx + cateIdx*1000 + numIdx + ansIdx*0)
+    
+    def musicInfo(self, args):
+        with open()
 
 
-
-class MySong:
-    def __init__(self):
-        self.idx1 =None
-        self.basic_info = None
-        self.address = None
-        self.time = None
-        self.answer = None
-        self.hint = None
-
-
-class MyDict:
-    AnswerDict = {}
-    Scount = 0
-    def __init__(self):
-        self.songDict = {}
-        self.ansidx = 10
-
-    def append(self, appendType ,datalist, numberCut=None):
-        """
-        appendType: Song(노래)
-        """
-        if appendType == "Song":
-            # datalist 안의 숫자가, 열 번호-1 을 의미합니다. 만약 열을 바꾸셨다면, 이 숫자부터 바꿔보는 것을 추천합니다.
-            d1 = datalist[0] - 1
-            ansidx = self.ansidx
-
-            if d1 not in self.songDict:
-                self.songDict[d1] = MySong()
-                self.songDict[d1].idx1 = d1
-            else:
-                raise IndexError
-
-            self.songDict[d1].basic_info = [str(data) if data else "" for data in datalist[1:6]]
-            self.songDict[d1].address = str(datalist[6])
-            self.songDict[d1].time = [x if x else 0 for x in [datalist[7], datalist[8]]]
-            self.songDict[d1].answer = []
-            self.songDict[d1].hint = makehint(datalist[ansidx])
-
-            if numberCut:
-                for i in numberCut:
-                    self.songDict[d1].answer.append([str(x) for x in datalist[ansidx:ansidx+i] if x])
-                    ansidx += i
-            else:
-                self.songDict[d1].answer.append([str(x) for x in datalist[ansidx:] if x])
-
-            for idx, anslist in enumerate(self.songDict[d1].answer):
-                for ans in anslist:
-                    for a in makeAnswer(ans):
-                        if a not in self.AnswerDict:
-                            self.AnswerDict[a] = []
-                        self.AnswerDict[a].append(10000 + d1*10 + idx)
-            
-            self.Scount += 1
+DEFAULT = '''CUSTOM_NAME = "DEFAULT"
+READ_INFO = [
+    {
+        "sheetName": "Main",
+        "function": "readSong",
+        "range": ["start", "end"],
+        "column": [
+            {
+                "idx_column": 0,
+                "name": "idx",
+            },
+            {
+                "idx_column": 1,
+                "name": "musicinfo1",
+            },
+            {
+                "idx_column": 2,
+                "name": "musicinfo2",
+            },
+            {
+                "idx_column": 3,
+                "name": "musicinfo3",
+            },
+            {
+                "idx_column": 4,
+                "name": "musicinfo4",
+            },
+            {
+                "idx_column": 5,
+                "name": "musicinfo5",
+            },
+            {
+                "idx_column": 6,
+                "name": "address",
+            },
+            {
+                "idx_column": 7,
+                "name": "t1",
+            },
+            {
+                "idx_column": 8,
+                "name": "t2",
+            },
+        ],
+        "readStart": 9,
+        "askRange": True
+    },
+]
+WRITE_INFO = [
+    {
+        "name": "musicInfo1",
+        "write": "노래 정보 1.txt",
+        "type": "musicInfo",
+        "data": "musicinfo1"
+    },
+    {
+        "name": "musicInfo2",
+        "write": "노래 정보 2.txt",
+        "type": "musicInfo",
+    },
+    {
+        "name": "musicInfo3",
+        "write": "노래 정보 3.txt",
+        "type": "musicInfo",
+    },
+    {
+        "name": "musicInfo4",
+        "write": "노래 정보 4.txt",
+        "type": "musicInfo",
+    },
+    {
+        "name": "musicInfo5",
+        "write": "노래 정보 5.txt",
+        "type": "musicInfo",
+    },
+    {
+        "name": "MusicAnswer",
+        "write": "정답 시 (노래정보 1 & 2 합진 것).txt",
+        "type": "musicInfoConjoinDelete()",
+        "args": ["musicInfo1", "musicInfo2",]
+    },
+    {
+        "name": "musicLength",
+        "write": "노래 길이.txt",
+        "type": "musicLength()",
+        "args": 1,
+    },
+    {
+        "name": "musicConsonantHint1",
+        "write": "초성 - 1 번째.txt",
+        "type": "consonantHint()",
+        "args": "_",
+    },
+    {
+        "name": "musicConsonantHint2",
+        "write": "초성 - 2 번째.txt",
+        "type": "consonantHint()",
+        "args": "*___",
+    },
+    {
+        "name": "musicConsonantHint3",
+        "write": "초성 - 3 번째.txt",
+        "type": "consonantHint()",
+        "args": "*_",
+    },
+    {
+        "name": "trigger",
+        "write": "정답 트리거.txt",
+        "type": "trigger",
+    },
+    {
+        "name": "duple",
+        "write": "중복정답 - 리스트.txt",
+        "type": "duple",
+    },
+    {
+        "name": "dulpeLength",
+        "write": "중복정답 - 길이.txt",
+        "type": "dulpeLength",
+    },
+    {
+        "name": "dupleCheck",
+        "write": "!중복정답 이슈.txt",
+        "type": "dupleCheck",
+    },
+    {
+        "name": "downloadCheck",
+        "write": "!다운로드 이슈.txt",
+        "type": "downloadCheck",
+    },
+]
+CONFIG_INFO = [
+    "MusicAnswer",
+    "musicInfo3",
+    "musicLength",
+    "musicConsonantHint1",
+    "musicConsonantHint2",
+    "musicConsonantHint3",
+    "duple",
+    "dulpeLength",
+]'''
 
 
 class TxtDict:
@@ -542,9 +553,8 @@ class MyType:
 
     def ReadData(self):
         # 정답 위치 설정
-        print("-" * 20)
         while 1:
-            inputdata = input("정답 칸의 너비를 입력해주세요 (기본: 15 10)\n 정답 인식 범위를 구분하는 경우 사용합니다.(줄임말 등을 on/off 하고 싶을 때 등)")
+            inputdata = input("정답 칸의 너비를 입력해주세요 (기본: 15 10)")
             inputdata = inputdata.split()
 
             isBreak = False
@@ -577,10 +587,10 @@ class MyType:
 
     def MakeTxt(self):
         self.TriggerDict = {}
-        newdx = 2000
+        newdx = 10000
 
-        self.key2000keys = []
-        self.key2000vals = []
+        self.key10000keys = []
+        self.key10000vals = []
 
         self.DupleDict = {}
 
@@ -626,7 +636,7 @@ class MyType:
         self.TxtDict.add_text("TriggerTxt", "[chatEvent]\n__addr__: 0x58D900\n")
 
         for key in sorted(self.TriggerDict.keys()):
-            if 10000 <= key:
+            if 2000 <= key < 10000:
                 self.TxtDict.add_text("TriggerTxt", "\n")
                 
             for val in self.TriggerDict[key]:
@@ -637,28 +647,28 @@ class MyType:
         for key in self.DupleDict.keys():
             DpKeyList = sorted([int(x) for x in key[1:-1].split(", ")])
 
-            self.key2000keys.append(newdx)
-            self.key2000vals.append(DpKeyList)
+            self.key10000keys.append(newdx)
+            self.key10000vals.append(DpKeyList)
 
             for val in self.DupleDict[key]:
                 self.TxtDict.add_text("TriggerTxt", f"{val}: {newdx}\n")
 
             newdx += 1   
 
-        key2000L = [0]
-        key2000 = []
-        for v in self.key2000vals:
-            key2000L += [key2000L[-1] + len(v)]
-            key2000 += v
+        key10000L = [0]
+        key10000 = []
+        for v in self.key10000vals:
+            key10000L += [key10000L[-1] + len(v)]
+            key10000 += v
 
-        if not key2000:
-            key2000 = [0]
+        if not key10000:
+            key10000 = [0]
 
-        self.TxtDict.set_init("key2000ListTxt", rootChanger(self.txtpath + "\\" + "key2000List.txt"))
-        self.TxtDict.extend_list("key2000ListTxt", key2000)
+        self.TxtDict.set_init("key10000ListTxt", rootChanger(self.txtpath + "\\" + "key10000List.txt"))
+        self.TxtDict.extend_list("key10000ListTxt", key10000)
         
-        self.TxtDict.set_init("key2000LengthTxt", rootChanger(self.txtpath + "\\" + "key2000Length.txt"))
-        self.TxtDict.extend_list("key2000LengthTxt", key2000L)
+        self.TxtDict.set_init("key10000LengthTxt", rootChanger(self.txtpath + "\\" + "key10000Length.txt"))
+        self.TxtDict.extend_list("key10000LengthTxt", key10000L)
 
         self.TxtDict.set_init("Song1Txt", rootChanger(self.txtpath + "\\" + "노래 정보 1.txt"))
         self.TxtDict.set_init("Song2Txt", rootChanger(self.txtpath + "\\" + "노래 정보 2.txt"))
@@ -766,7 +776,6 @@ class MyType:
         self.TxtDict.close_all_file()
         self.make_config()
 
-        print("-" * 20)
         while (wantDL == None):
             in_data = input("노래 다운로드 및 컷팅을 진행하시겠습니까??? (T / F)")
 
@@ -776,7 +785,6 @@ class MyType:
                 wantDL = False
                 return
 
-        print("-" * 20)
         while (isMono == None):
             in_data = input("Mono Type으로 자르시겠습니까??? (T / F)")
 
@@ -785,7 +793,6 @@ class MyType:
             if in_data in ["F", "f"]:
                 isMono = False
 
-        print("-" * 20)
         SI=None
         while(SI == None):
             in_data = input("원하시는 볼륨 크기를 적어주세요. 숫자가 작을수록, 음량이 커집니다.(볼륨 평준화 용도 / 0은 볼륨 평준화 안한다는 의미)")
@@ -854,11 +861,11 @@ class MyType:
             f.write(f"const MusicLength = [{mytext}];\n\n")
             
             mytext = ""
-            with open(rootChanger(self.TxtDict.get_link("key2000ListTxt")), "r", encoding="utf-8") as f1:
+            with open(rootChanger(self.TxtDict.get_link("key10000ListTxt")), "r", encoding="utf-8") as f1:
                 mytext = "".join(f1.readlines())
-            f.write(f"const key2000List = [{mytext}];\n\n")
+            f.write(f"const key10000List = [{mytext}];\n\n")
             
             mytext = ""
-            with open(rootChanger(self.TxtDict.get_link("key2000LengthTxt")), "r", encoding="utf-8") as f1:
+            with open(rootChanger(self.TxtDict.get_link("key10000LengthTxt")), "r", encoding="utf-8") as f1:
                 mytext = "".join(f1.readlines())
-            f.write(f"const key2000Length = [{mytext}];\n\n")
+            f.write(f"const key10000Length = [{mytext}];\n\n")
