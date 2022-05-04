@@ -892,7 +892,7 @@ class MyType:
 
 
     def make_config(self):
-        print(DeleteAllFiles(rootChanger(self.txtpath), ".eps"))
+        # print(DeleteAllFiles(rootChanger(self.txtpath), ".eps"))
         with open(rootChanger(self.txtpath + "\\" + "musicConfig.eps"), "w", encoding="utf-8") as f:
             mytext = ""
             with open(rootChanger(self.TxtDict.get_link("Song3Txt")), "r", encoding="utf-8") as f1:

@@ -124,9 +124,10 @@ def nonChange(word):
 
 
 # replace 뭉치
-def replace_show(word):
+def replace_show(word, slash = True):
     res = word
-    res = res.replace("\\","\\\\")
+    if slash:
+        res = res.replace("\\","\\\\")
     res = res.replace("“", "\"").replace("”",  "\"")
     res = res.replace("‘", "\'").replace("’",  "\'")
     res = res.replace("…", "...")
@@ -134,9 +135,10 @@ def replace_show(word):
     return res
 
 
-def replace_answer(word):
+def replace_answer(word, slash = True):
     res = word
-    res = res.replace("\\","\\\\")
+    if slash:
+        res = res.replace("\\","\\\\")
     res = res.replace(":","\\:")
     res = res.replace("“", "\"").replace("”",  "\"")
     res = res.replace("‘", "\'").replace("’",  "\'")
@@ -224,7 +226,7 @@ class MyDict:
             else:
                 self.lyricDict[d1].timelist.append(calculateTiming(datalist[timeidx]))
 
-            for lidx, lval in enumerate([replace_show(str(x)) if x != None else " " for x in datalist[textidx:textidx+4]]):
+            for lidx, lval in enumerate([replace_show(str(x), False) if x != None else " " for x in datalist[textidx:textidx+4]]):
                 if "\\x12" not in lval and "\\x13" not in lval:
                     if "\\left" in lval:
                         lval2 = lval.replace("\\left", "")
@@ -449,8 +451,8 @@ class MyType:
             
 
             val = ASDF.timelist
-            self.TxtDict.add_text("LyricTimingTxt", f"{len(val)}, ")
-            self.TxtDict.add_text("LyricTimingLengthTxt", f"{val[:]+[99999999,99999999]},\n")
+            self.TxtDict.add_text("LyricTimingLengthTxt", f"{len(val)}, ")
+            self.TxtDict.add_text("LyricTimingTxt", f"{val[:]+[99999999,99999999]},\n")
 
         self.TxtDict.set_write_all(True)
         
