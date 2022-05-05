@@ -1,0 +1,190 @@
+[chatEvent]
+__addr__: 0x58D900
+
+온라인 게임 폐인 슈프레히코어: 2000
+온라인게임폐인슈프레히코어: 2000
+넷게임 폐인 슈프레히코어: 2000
+넷게임폐인슈프레히코어: 2000
+네토게 하이진 슈프레히코어: 2000
+네토게하이진슈프레히코어: 2000
+The MMORPG ADDICTS ANTHEM: 2000
+THE MMORPG ADDICTS ANTHEM: 2000
+the mmorpg addicts anthem: 2000
+TheMMORPGADDICTSANTHEM: 2000
+THEMMORPGADDICTSANTHEM: 2000
+themmorpgaddictsanthem: 2000
+ONLINE GAME ADDICTS SPRECHCHOR: 2000
+online game addicts sprechchor: 2000
+ONLINEGAMEADDICTSSPRECHCHOR: 2000
+onlinegameaddictssprechchor: 2000
+Netoge Haijin Sprechchor: 2000
+NETOGE HAIJIN SPRECHCHOR: 2000
+netoge haijin sprechchor: 2000
+NetogeHaijinSprechchor: 2000
+NETOGEHAIJINSPRECHCHOR: 2000
+netogehaijinsprechchor: 2000
+
+언노운 마더 구스: 2001
+언노운마더구스: 2001
+Unknown Mother Goose: 2001
+UNKNOWN MOTHER GOOSE: 2001
+unknown mother goose: 2001
+UnknownMotherGoose: 2001
+UNKNOWNMOTHERGOOSE: 2001
+unknownmothergoose: 2001
+
+멜랑콜릭: 2002
+Melancholic: 2002
+MELANCHOLIC: 2002
+melancholic: 2002
+
+벚꽃 전선 이상없음: 2003
+벚꽃전선이상없음: 2003
+사쿠라젠센 이죠우나시: 2003
+사쿠라젠센이죠우나시: 2003
+All Good on the Sakura Front: 2003
+ALL GOOD ON THE SAKURA FRONT: 2003
+all good on the sakura front: 2003
+AllGoodontheSakuraFront: 2003
+ALLGOODONTHESAKURAFRONT: 2003
+allgoodonthesakurafront: 2003
+Sakurazensen Ijou Nashi: 2003
+SAKURAZENSEN IJOU NASHI: 2003
+sakurazensen ijou nashi: 2003
+SakurazensenIjouNashi: 2003
+SAKURAZENSENIJOUNASHI: 2003
+sakurazensenijounashi: 2003
+
+천성의 약함: 2004
+천성의약함: 2004
+아마노쟈쿠: 2004
+A Born Coward: 2004
+A BORN COWARD: 2004
+a born coward: 2004
+ABornCoward: 2004
+ABORNCOWARD: 2004
+aborncoward: 2004
+Amanojaku: 2004
+AMANOJAKU: 2004
+amanojaku: 2004
+
+투명 엘레지: 2005
+투명엘레지: 2005
+토우메이 엘레지: 2005
+토우메이엘레지: 2005
+Transparent Elegy: 2005
+TRANSPARENT ELEGY: 2005
+transparent elegy: 2005
+TransparentElegy: 2005
+TRANSPARENTELEGY: 2005
+transparentelegy: 2005
+Toumei Elegy: 2005
+TOUMEI ELEGY: 2005
+toumei elegy: 2005
+ToumeiElegy: 2005
+TOUMEIELEGY: 2005
+toumeielegy: 2005
+
+샷건 러버즈: 2006
+샷건러버즈: 2006
+Shotgun Lovers: 2006
+SHOTGUN LOVERS: 2006
+shotgun lovers: 2006
+ShotgunLovers: 2006
+SHOTGUNLOVERS: 2006
+shotgunlovers: 2006
+
+저스트 어 게임: 2007
+저스트어게임: 2007
+Just a game: 2007
+JUST A GAME: 2007
+just a game: 2007
+Justagame: 2007
+JUSTAGAME: 2007
+justagame: 2007
+
+죽어버리다니 한심하구나!: 2008
+죽어버리다니한심하구나!: 2008
+죽어버리다니 한심하구나: 2008
+죽어버리다니한심하구나: 2008
+신데시마우토와 나사케나이!: 2008
+신데시마우토와나사케나이!: 2008
+신데시마우토와 나사케나이: 2008
+신데시마우토와나사케나이: 2008
+Death Should Not Have Taken Thee: 2008
+DEATH SHOULD NOT HAVE TAKEN THEE: 2008
+death should not have taken thee: 2008
+DeathShouldNotHaveTakenThee: 2008
+DEATHSHOULDNOTHAVETAKENTHEE: 2008
+deathshouldnothavetakenthee: 2008
+Death Should Not Have Taken Thee!: 2008
+DEATH SHOULD NOT HAVE TAKEN THEE!: 2008
+death should not have taken thee!: 2008
+DeathShouldNotHaveTakenThee!: 2008
+DEATHSHOULDNOTHAVETAKENTHEE!: 2008
+deathshouldnothavetakenthee!: 2008
+Tis a Pity Thou Hast Died: 2008
+TIS A PITY THOU HAST DIED: 2008
+tis a pity thou hast died: 2008
+TisaPityThouHastDied: 2008
+TISAPITYTHOUHASTDIED: 2008
+tisapitythouhastdied: 2008
+Tis a Pity Thou Hast Died!: 2008
+TIS A PITY THOU HAST DIED!: 2008
+tis a pity thou hast died!: 2008
+TisaPityThouHastDied!: 2008
+TISAPITYTHOUHASTDIED!: 2008
+tisapitythouhastdied!: 2008
+Shinde Shimau to wa Nasakenai: 2008
+SHINDE SHIMAU TO WA NASAKENAI: 2008
+shinde shimau to wa nasakenai: 2008
+ShindeShimautowaNasakenai: 2008
+SHINDESHIMAUTOWANASAKENAI: 2008
+shindeshimautowanasakenai: 2008
+Shinde Shimau to wa Nasakenai!: 2008
+SHINDE SHIMAU TO WA NASAKENAI!: 2008
+shinde shimau to wa nasakenai!: 2008
+ShindeShimautowaNasakenai!: 2008
+SHINDESHIMAUTOWANASAKENAI!: 2008
+shindeshimautowanasakenai!: 2008
+
+하츠네 미쿠의 격창: 2009
+하츠네미쿠의격창: 2009
+하츠네 미쿠노 게키쇼우: 2009
+하츠네미쿠노게키쇼우: 2009
+The Intense Voice Of Hatsune Miku: 2009
+THE INTENSE VOICE OF HATSUNE MIKU: 2009
+the intense voice of hatsune miku: 2009
+TheIntenseVoiceOfHatsuneMiku: 2009
+THEINTENSEVOICEOFHATSUNEMIKU: 2009
+theintensevoiceofhatsunemiku: 2009
+The Intense Singing of Hatsune Miku: 2009
+THE INTENSE SINGING OF HATSUNE MIKU: 2009
+the intense singing of hatsune miku: 2009
+TheIntenseSingingofHatsuneMiku: 2009
+THEINTENSESINGINGOFHATSUNEMIKU: 2009
+theintensesingingofhatsunemiku: 2009
+Hatsune Miku no Gekishou: 2009
+HATSUNE MIKU NO GEKISHOU: 2009
+hatsune miku no gekishou: 2009
+HatsuneMikunoGekishou: 2009
+HATSUNEMIKUNOGEKISHOU: 2009
+hatsunemikunogekishou: 2009
+
+사쿠라젠센 이죠 나시: 3003
+사쿠라젠센이죠나시: 3003
+
+토메이 엘레지: 3005
+토메이엘레지: 3005
+
+하츠네 미쿠노 게키쇼: 3009
+하츠네미쿠노게키쇼: 3009
+
+
+!강퇴1: 1990
+!강퇴2: 1991
+!강퇴3: 1992
+!강퇴4: 1993
+!강퇴5: 1994
+!강퇴6: 1995
+!강퇴7: 1996

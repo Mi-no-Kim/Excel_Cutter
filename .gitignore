@@ -1,5 +1,7 @@
 # my_pc_setting
-__RESULT/
+__RESULT/*/wav
+__RESULT/*/map/BulidData*
+
 map/BulidData*
 __pycache__
 

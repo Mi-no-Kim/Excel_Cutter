@@ -1,0 +1,1 @@
+Db('YOU'), Db('ライオン'), Db('Hello,world!'), Db('イエスタデイ'), Db('YOU'), 

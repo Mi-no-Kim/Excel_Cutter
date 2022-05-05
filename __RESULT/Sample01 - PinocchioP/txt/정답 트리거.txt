@@ -1,0 +1,436 @@
+[chatEvent]
+__addr__: 0x58D900
+
+마법소녀와 초콜릿: 10000
+마법소녀와초콜릿: 10000
+마법소녀와 초콜렛: 10000
+마법소녀와초콜렛: 10000
+마법소녀와 쵸콜릿: 10000
+마법소녀와쵸콜릿: 10000
+마법소녀와 쵸콜렛: 10000
+마법소녀와쵸콜렛: 10000
+마호우 쇼우죠토 초콜릿: 10000
+마호우쇼우죠토초콜릿: 10000
+마호우 쇼우죠토 초콜렛: 10000
+마호우쇼우죠토초콜렛: 10000
+마호우 쇼우죠토 쵸콜릿: 10000
+마호우쇼우죠토쵸콜릿: 10000
+마호우 쇼우죠토 쵸콜렛: 10000
+마호우쇼우죠토쵸콜렛: 10000
+Magical Girl and Chocolate: 10000
+MAGICAL GIRL AND CHOCOLATE: 10000
+magical girl and chocolate: 10000
+MagicalGirlandChocolate: 10000
+MAGICALGIRLANDCHOCOLATE: 10000
+magicalgirlandchocolate: 10000
+Mahou Shoujo to Chocolate: 10000
+MAHOU SHOUJO TO CHOCOLATE: 10000
+mahou shoujo to chocolate: 10000
+MahouShoujotoChocolate: 10000
+MAHOUSHOUJOTOCHOCOLATE: 10000
+mahoushoujotochocolate: 10000
+
+코스모 스파이스: 10010
+코스모스파이스: 10010
+Cosmospice: 10010
+COSMOSPICE: 10010
+cosmospice: 10010
+
+벚꽃 타투: 10020
+벚꽃타투: 10020
+사쿠라노 타투: 10020
+사쿠라노타투: 10020
+Sakura no Tattoo: 10020
+SAKURA NO TATTOO: 10020
+sakura no tattoo: 10020
+SakuranoTattoo: 10020
+SAKURANOTATTOO: 10020
+sakuranotattoo: 10020
+Sakura Tattoo: 10020
+SAKURA TATTOO: 10020
+sakura tattoo: 10020
+SakuraTattoo: 10020
+SAKURATATTOO: 10020
+sakuratattoo: 10020
+
+신 같네: 10030
+신같네: 10030
+카밋포이나: 10030
+Kamippoi na: 10030
+KAMIPPOI NA: 10030
+kamippoi na: 10030
+Kamippoina: 10030
+KAMIPPOINA: 10030
+kamippoina: 10030
+God-ish: 10030
+GOD-ISH: 10030
+god-ish: 10030
+Godish: 10030
+GODISH: 10030
+godish: 10030
+
+있잖아 있잖아 있잖아.: 10040
+있잖아있잖아있잖아.: 10040
+있잖아 있잖아 있잖아: 10040
+있잖아있잖아있잖아: 10040
+네에 네에 네에.: 10040
+네에네에네에.: 10040
+네에 네에 네에: 10040
+네에네에네에: 10040
+Nee Nee Nee.: 10040
+NEE NEE NEE.: 10040
+nee nee nee.: 10040
+NeeNeeNee.: 10040
+NEENEENEE.: 10040
+neeneenee.: 10040
+Hey, Hey, Hey.: 10040
+HEY, HEY, HEY.: 10040
+hey, hey, hey.: 10040
+Hey,Hey,Hey.: 10040
+HEY,HEY,HEY.: 10040
+hey,hey,hey.: 10040
+
+논브레스 오블리주: 10050
+논브레스오블리주: 10050
+Non-Breath Oblige: 10050
+NON-BREATH OBLIGE: 10050
+non-breath oblige: 10050
+Non-BreathOblige: 10050
+NON-BREATHOBLIGE: 10050
+non-breathoblige: 10050
+Non Breath Oblige: 10050
+NON BREATH OBLIGE: 10050
+non breath oblige: 10050
+NonBreathOblige: 10050
+NONBREATHOBLIGE: 10050
+nonbreathoblige: 10050
+
+리얼로 날려버려: 10060
+리얼로날려버려: 10060
+리얼니 붓토바세: 10060
+리얼니붓토바세: 10060
+Real ni Buttobasu: 10060
+REAL NI BUTTOBASU: 10060
+real ni buttobasu: 10060
+RealniButtobasu: 10060
+REALNIBUTTOBASU: 10060
+realnibuttobasu: 10060
+KICK-ASS *LITERALLY: 10060
+kick-ass *literally: 10060
+KICK-ASS*LITERALLY: 10060
+kick-ass*literally: 10060
+KICK ASS LITERALLY: 10060
+kick ass literally: 10060
+KICKASSLITERALLY: 10060
+kickassliterally: 10060
+
+안테나: 10070
+Antenna: 10070
+ANTENNA: 10070
+antenna: 10070
+
+사공사: 10080
+404: 10080
+
+러빗: 10090
+래빗: 10090
+러브 잇: 10090
+러브잇: 10090
+Loveit: 10090
+LOVEIT: 10090
+loveit: 10090
+
+10년 후 보컬로이드의 노래: 10100
+10년후보컬로이드의노래: 10100
+십년 후 보컬로이드의 노래: 10100
+십년후보컬로이드의노래: 10100
+쥬우넨 아토노 보컬로이드노 우타: 10100
+쥬우넨아토노보컬로이드노우타: 10100
+Juunen Ato no Vocaloid no Uta: 10100
+JUUNEN ATO NO VOCALOID NO UTA: 10100
+juunen ato no vocaloid no uta: 10100
+JuunenAtonoVocaloidnoUta: 10100
+JUUNENATONOVOCALOIDNOUTA: 10100
+juunenatonovocaloidnouta: 10100
+The Vocaloid Songs 10 Years Later: 10100
+THE VOCALOID SONGS 10 YEARS LATER: 10100
+the vocaloid songs 10 years later: 10100
+TheVocaloidSongs10YearsLater: 10100
+THEVOCALOIDSONGS10YEARSLATER: 10100
+thevocaloidsongs10yearslater: 10100
+
+시크릿 히미츠: 10110
+시크릿히미츠: 10110
+Secret Himitsu: 10110
+SECRET HIMITSU: 10110
+secret himitsu: 10110
+SecretHimitsu: 10110
+SECRETHIMITSU: 10110
+secrethimitsu: 10110
+Secret Secret: 10110
+SECRET SECRET: 10110
+secret secret: 10110
+SecretSecret: 10110
+SECRETSECRET: 10110
+secretsecret: 10110
+
+사랑받지 못해도 네가 있어: 10120
+사랑받지못해도네가있어: 10120
+아이사레나쿠테모 키미가 이루: 10120
+아이사레나쿠테모키미가이루: 10120
+Aisarenakute mo Kimi ga Iru: 10120
+AISARENAKUTE MO KIMI GA IRU: 10120
+aisarenakute mo kimi ga iru: 10120
+AisarenakutemoKimigaIru: 10120
+AISARENAKUTEMOKIMIGAIRU: 10120
+aisarenakutemokimigairu: 10120
+Because You're Here: 10120
+BECAUSE YOU'RE HERE: 10120
+because you're here: 10120
+BecauseYou'reHere: 10120
+BECAUSEYOU'REHERE: 10120
+becauseyou'rehere: 10120
+Because You re Here: 10120
+BECAUSE YOU RE HERE: 10120
+because you re here: 10120
+BecauseYoureHere: 10120
+BECAUSEYOUREHERE: 10120
+becauseyourehere: 10120
+Even if I'm Not Loved, You're Here: 10120
+EVEN IF I'M NOT LOVED, YOU'RE HERE: 10120
+even if i'm not loved, you're here: 10120
+EvenifI'mNotLoved,You'reHere: 10120
+EVENIFI'MNOTLOVED,YOU'REHERE: 10120
+evenifi'mnotloved,you'rehere: 10120
+Even if I m Not Loved You re Here: 10120
+EVEN IF I M NOT LOVED YOU RE HERE: 10120
+even if i m not loved you re here: 10120
+EvenifImNotLovedYoureHere: 10120
+EVENIFIMNOTLOVEDYOUREHERE: 10120
+evenifimnotlovedyourehere: 10120
+
+세상은 아직 시작조차 하지 않았어: 10130
+세상은아직시작조차하지않았어: 10130
+세카이와 마다 하지맛테스라 이나이: 10130
+세카이와마다하지맛테스라이나이: 10130
+Sekai wa Mada Hajimatte sura Inai: 10130
+SEKAI WA MADA HAJIMATTE SURA INAI: 10130
+sekai wa mada hajimatte sura inai: 10130
+SekaiwaMadaHajimattesuraInai: 10130
+SEKAIWAMADAHAJIMATTESURAINAI: 10130
+sekaiwamadahajimattesurainai: 10130
+The World Hasn't Even Started Yet: 10130
+THE WORLD HASN'T EVEN STARTED YET: 10130
+the world hasn't even started yet: 10130
+TheWorldHasn'tEvenStartedYet: 10130
+THEWORLDHASN'TEVENSTARTEDYET: 10130
+theworldhasn'tevenstartedyet: 10130
+The World Hasn t Even Started Yet: 10130
+THE WORLD HASN T EVEN STARTED YET: 10130
+the world hasn t even started yet: 10130
+TheWorldHasntEvenStartedYet: 10130
+THEWORLDHASNTEVENSTARTEDYET: 10130
+theworldhasntevenstartedyet: 10130
+
+얼티밋 선배: 10140
+얼티밋선배: 10140
+얼티밋 센파이: 10140
+얼티밋센파이: 10140
+Ultimate Senpai: 10140
+ULTIMATE SENPAI: 10140
+ultimate senpai: 10140
+UltimateSenpai: 10140
+ULTIMATESENPAI: 10140
+ultimatesenpai: 10140
+
+인간 따위 정말 싫어+: 10150
+인간따위정말싫어+: 10150
+인간 따위 정말 싫어: 10150
+인간따위정말싫어: 10150
+닌겐난카 다이키라이+: 10150
+닌겐난카다이키라이+: 10150
+닌겐난카 다이키라이: 10150
+닌겐난카다이키라이: 10150
+Ningen Nanka Daikirai+: 10150
+NINGEN NANKA DAIKIRAI+: 10150
+ningen nanka daikirai+: 10150
+NingenNankaDaikirai+: 10150
+NINGENNANKADAIKIRAI+: 10150
+ningennankadaikirai+: 10150
+Ningen Nanka Daikirai: 10150
+NINGEN NANKA DAIKIRAI: 10150
+ningen nanka daikirai: 10150
+NingenNankaDaikirai: 10150
+NINGENNANKADAIKIRAI: 10150
+ningennankadaikirai: 10150
+I kinda hate humans+: 10150
+I KINDA HATE HUMANS+: 10150
+i kinda hate humans+: 10150
+Ikindahatehumans+: 10150
+IKINDAHATEHUMANS+: 10150
+ikindahatehumans+: 10150
+I kinda hate humans: 10150
+I KINDA HATE HUMANS: 10150
+i kinda hate humans: 10150
+Ikindahatehumans: 10150
+IKINDAHATEHUMANS: 10150
+ikindahatehumans: 10150
+I Just Hate People+: 10150
+I JUST HATE PEOPLE+: 10150
+i just hate people+: 10150
+IJustHatePeople+: 10150
+IJUSTHATEPEOPLE+: 10150
+ijusthatepeople+: 10150
+I Just Hate People: 10150
+I JUST HATE PEOPLE: 10150
+i just hate people: 10150
+IJustHatePeople: 10150
+IJUSTHATEPEOPLE: 10150
+ijusthatepeople: 10150
+
+양파+: 10160
+양파: 10160
+타마네기+: 10160
+타마네기: 10160
+Tamanegi+: 10160
+TAMANEGI+: 10160
+tamanegi+: 10160
+Tamanegi: 10160
+TAMANEGI: 10160
+tamanegi: 10160
+Onion+: 10160
+ONION+: 10160
+onion+: 10160
+Onion: 10160
+ONION: 10160
+onion: 10160
+
+사랑의 사랑에 의한 사랑을 위한 사랑: 10170
+사랑의사랑에의한사랑을위한사랑: 10170
+코이노 코이니 요루 코이노 타메노 코이: 10170
+코이노코이니요루코이노타메노코이: 10170
+Koi no Koi ni Yoru Koi no Tame no Koi: 10170
+KOI NO KOI NI YORU KOI NO TAME NO KOI: 10170
+koi no koi ni yoru koi no tame no koi: 10170
+KoinoKoiniYoruKoinoTamenoKoi: 10170
+KOINOKOINIYORUKOINOTAMENOKOI: 10170
+koinokoiniyorukoinotamenokoi: 10170
+Love for Love by Love of Love: 10170
+LOVE FOR LOVE BY LOVE OF LOVE: 10170
+love for love by love of love: 10170
+LoveforLovebyLoveofLove: 10170
+LOVEFORLOVEBYLOVEOFLOVE: 10170
+loveforlovebyloveoflove: 10170
+
+제로: 10180
+Zero: 10180
+ZERO: 10180
+zero: 10180
+
+내장이 있나요: 10190
+내장이있나요: 10190
+나이조우 아리마스카: 10190
+나이조우아리마스카: 10190
+Naizou Arimasu ka: 10190
+NAIZOU ARIMASU KA: 10190
+naizou arimasu ka: 10190
+NaizouArimasuka: 10190
+NAIZOUARIMASUKA: 10190
+naizouarimasuka: 10190
+What's Inside: 10190
+WHAT'S INSIDE: 10190
+what's inside: 10190
+What'sInside: 10190
+WHAT'SINSIDE: 10190
+what'sinside: 10190
+What s Inside: 10190
+WHAT S INSIDE: 10190
+what s inside: 10190
+WhatsInside: 10190
+WHATSINSIDE: 10190
+whatsinside: 10190
+
+뷰티풀한 픽션: 10200
+뷰티풀한픽션: 10200
+뷰티풀나 픽션: 10200
+뷰티풀나픽션: 10200
+Beautiful Fiction: 10200
+BEAUTIFUL FICTION: 10200
+beautiful fiction: 10200
+BeautifulFiction: 10200
+BEAUTIFULFICTION: 10200
+beautifulfiction: 10200
+Beautiful na Fiction: 10200
+BEAUTIFUL NA FICTION: 10200
+beautiful na fiction: 10200
+BeautifulnaFiction: 10200
+BEAUTIFULNAFICTION: 10200
+beautifulnafiction: 10200
+
+염라대왕님이 말씀하시는 대로: 10210
+염라대왕님이말씀하시는대로: 10210
+엔마사마노 이우토오리: 10210
+엔마사마노이우토오리: 10210
+Enma-sama no Iutoori: 10210
+ENMA-SAMA NO IUTOORI: 10210
+enma-sama no iutoori: 10210
+Enma-samanoIutoori: 10210
+ENMA-SAMANOIUTOORI: 10210
+enma-samanoiutoori: 10210
+Enma sama no Iutoori: 10210
+ENMA SAMA NO IUTOORI: 10210
+enma sama no iutoori: 10210
+EnmasamanoIutoori: 10210
+ENMASAMANOIUTOORI: 10210
+enmasamanoiutoori: 10210
+Whatever Yama Says Goes: 10210
+WHATEVER YAMA SAYS GOES: 10210
+whatever yama says goes: 10210
+WhateverYamaSaysGoes: 10210
+WHATEVERYAMASAYSGOES: 10210
+whateveryamasaysgoes: 10210
+
+메이 메이: 10220
+메이메이: 10220
+Mei Mei: 10220
+MEI MEI: 10220
+mei mei: 10220
+MeiMei: 10220
+MEIMEI: 10220
+meimei: 10220
+
+밤낚시: 10230
+요즈리나: 10230
+Yozurina: 10230
+YOZURINA: 10230
+yozurina: 10230
+night fishing: 10230
+NIGHT FISHING: 10230
+nightfishing: 10230
+NIGHTFISHING: 10230
+
+귀신의 우스갯소리: 10240
+귀신의우스갯소리: 10240
+오바케노 우케네라이: 10240
+오바케노우케네라이: 10240
+Obake no Ukenerai: 10240
+OBAKE NO UKENERAI: 10240
+obake no ukenerai: 10240
+ObakenoUkenerai: 10240
+OBAKENOUKENERAI: 10240
+obakenoukenerai: 10240
+Ghosts Play to the Audience: 10240
+GHOSTS PLAY TO THE AUDIENCE: 10240
+ghosts play to the audience: 10240
+GhostsPlaytotheAudience: 10240
+GHOSTSPLAYTOTHEAUDIENCE: 10240
+ghostsplaytotheaudience: 10240
+
+
+!강퇴1: 1990
+!강퇴2: 1991
+!강퇴3: 1992
+!강퇴4: 1993
+!강퇴5: 1994
+!강퇴6: 1995
+!강퇴7: 1996

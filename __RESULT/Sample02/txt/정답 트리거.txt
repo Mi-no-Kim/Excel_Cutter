@@ -1,0 +1,125 @@
+[chatEvent]
+__addr__: 0x58D900
+
+생명에게 미움받고 있어: 2000
+생명에게미움받고있어: 2000
+이노치니 키라와레테 이루: 2000
+이노치니키라와레테이루: 2000
+Inochi ni Kirawarete Iru: 2000
+INOCHI NI KIRAWARETE IRU: 2000
+inochi ni kirawarete iru: 2000
+InochiniKirawareteIru: 2000
+INOCHINIKIRAWARETEIRU: 2000
+inochinikirawareteiru: 2000
+Inochi ni Kirawarete Iru.: 2000
+INOCHI NI KIRAWARETE IRU.: 2000
+inochi ni kirawarete iru.: 2000
+InochiniKirawareteIru.: 2000
+INOCHINIKIRAWARETEIRU.: 2000
+inochinikirawareteiru.: 2000
+Hated By Life: 2000
+HATED BY LIFE: 2000
+hated by life: 2000
+HatedByLife: 2000
+HATEDBYLIFE: 2000
+hatedbylife: 2000
+Hated By Life.: 2000
+HATED BY LIFE.: 2000
+hated by life.: 2000
+HatedByLife.: 2000
+HATEDBYLIFE.: 2000
+hatedbylife.: 2000
+Hated by Life Itself: 2000
+HATED BY LIFE ITSELF: 2000
+hated by life itself: 2000
+HatedbyLifeItself: 2000
+HATEDBYLIFEITSELF: 2000
+hatedbylifeitself: 2000
+Hated by Life Itself.: 2000
+HATED BY LIFE ITSELF.: 2000
+hated by life itself.: 2000
+HatedbyLifeItself.: 2000
+HATEDBYLIFEITSELF.: 2000
+hatedbylifeitself.: 2000
+
+그린라이츠 세레나데: 2001
+그린라이츠세레나데: 2001
+Greenlights Serenade: 2001
+GREENLIGHTS SERENADE: 2001
+greenlights serenade: 2001
+GreenlightsSerenade: 2001
+GREENLIGHTSSERENADE: 2001
+greenlightsserenade: 2001
+
+슈가송과 비터스텝: 2002
+슈가송과비터스텝: 2002
+슈가송토 비터스텝: 2002
+슈가송토비터스텝: 2002
+Sugar Song to Bitter Step: 2002
+SUGAR SONG TO BITTER STEP: 2002
+sugar song to bitter step: 2002
+SugarSongtoBitterStep: 2002
+SUGARSONGTOBITTERSTEP: 2002
+sugarsongtobitterstep: 2002
+
+래그 트레인: 2003
+래그트레인: 2003
+라그 트레인: 2003
+라그트레인: 2003
+Lag Train: 2003
+LAG TRAIN: 2003
+lag train: 2003
+LagTrain: 2003
+LAGTRAIN: 2003
+lagtrain: 2003
+
+유: 2004
+유우: 2004
+You: 2004
+YOU: 2004
+you: 2004
+
+핫 리미트: 2005
+핫리미트: 2005
+핫 리밋: 2005
+핫리밋: 2005
+HOT LIMIT: 2005
+hot limit: 2005
+HOTLIMIT: 2005
+hotlimit: 2005
+
+상처투성이: 2006
+카사부타: 2006
+Kasabuta: 2006
+KASABUTA: 2006
+kasabuta: 2006
+
+한계배틀: 2007
+겐카이 배틀: 2007
+겐카이배틀: 2007
+Genkai Battle: 2007
+GENKAI BATTLE: 2007
+genkai battle: 2007
+GenkaiBattle: 2007
+GENKAIBATTLE: 2007
+genkaibattle: 2007
+
+종말의 세계로부터: 2008
+종말의세계로부터: 2008
+오와리노 세카이카라: 2008
+오와리노세카이카라: 2008
+Owari no Sekai kara: 2008
+OWARI NO SEKAI KARA: 2008
+owari no sekai kara: 2008
+OwarinoSekaikara: 2008
+OWARINOSEKAIKARA: 2008
+owarinosekaikara: 2008
+
+
+!강퇴1: 1990
+!강퇴2: 1991
+!강퇴3: 1992
+!강퇴4: 1993
+!강퇴5: 1994
+!강퇴6: 1995
+!강퇴7: 1996

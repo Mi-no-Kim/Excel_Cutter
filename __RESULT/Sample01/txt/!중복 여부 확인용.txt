@@ -1,0 +1,4 @@
+SingleLine
+: []
+MultiLine
+: ['유', 'YOU', 'you', '헬로 월드', '헬로월드', 'HELLO WORLD', 'hello world', 'HELLOWORLD', 'helloworld']

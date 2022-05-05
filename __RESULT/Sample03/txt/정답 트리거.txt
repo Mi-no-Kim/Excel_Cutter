@@ -1,0 +1,101 @@
+[chatEvent]
+__addr__: 0x58D900
+
+천원돌파 그렌라간: 2000
+천원돌파그렌라간: 2000
+Tengen Toppa Gurren Lagann: 2000
+TENGEN TOPPA GURREN LAGANN: 2000
+tengen toppa gurren lagann: 2000
+TengenToppaGurrenLagann: 2000
+TENGENTOPPAGURRENLAGANN: 2000
+tengentoppagurrenlagann: 2000
+
+킬라킬: 2001
+KILL la KILL: 2001
+KILL LA KILL: 2001
+kill la kill: 2001
+KILLlaKILL: 2001
+KILLLAKILL: 2001
+killlakill: 2001
+
+소드 아트 온라인: 2002
+소드아트온라인: 2002
+Sword Art Online: 2002
+SWORD ART ONLINE: 2002
+sword art online: 2002
+SwordArtOnline: 2002
+SWORDARTONLINE: 2002
+swordartonline: 2002
+
+하늘색 데이즈: 12000
+하늘색데이즈: 12000
+소라이로 데이즈: 12000
+소라이로데이즈: 12000
+
+눈물의 씨앗, 웃음의 꽃: 12001
+눈물의씨앗,웃음의꽃: 12001
+눈물의 씨앗 웃음의 꽃: 12001
+눈물의씨앗웃음의꽃: 12001
+나미다노 타네 에가오노 하나: 12001
+나미다노타네에가오노하나: 12001
+나미다노 타네, 에가오노 하나: 12001
+나미다노타네,에가오노하나: 12001
+
+해필리 에버 애프터: 12002
+해필리에버애프터: 12002
+Happily Ever After: 12002
+HAPPILY EVER AFTER: 12002
+happily ever after: 12002
+HappilyEverAfter: 12002
+HAPPILYEVERAFTER: 12002
+happilyeverafter: 12002
+
+시리우스: 12003
+Sirius: 12003
+SIRIUS: 12003
+sirius: 12003
+
+앰비규어스: 12004
+엠비규어스: 12004
+ambiguous: 12004
+AMBIGUOUS: 12004
+
+미안해, 착한 아이로 있을 순 없어.: 12005
+미안해,착한아이로있을순없어.: 12005
+미안해 착한 아이로 있을 순 없어: 12005
+미안해착한아이로있을순없어: 12005
+고멘네 이이 코쟈 이나레나이: 12005
+고멘네이이코쟈이나레나이: 12005
+고멘네, 이이 코쟈 이나레나이.: 12005
+고멘네,이이코쟈이나레나이.: 12005
+
+크로싱 필드: 12006
+크로싱필드: 12006
+Crossing Field: 12006
+CROSSING FIELD: 12006
+crossing field: 12006
+CrossingField: 12006
+CROSSINGFIELD: 12006
+crossingfield: 12006
+
+커레이지: 12007
+코레이지: 12007
+커리지: 12007
+courage: 12007
+COURAGE: 12007
+
+증표: 12008
+시루시: 12008
+
+이노센스: 12009
+INNOCENCE: 12009
+innocence: 12009
+
+
+!강퇴1: 1990
+!강퇴2: 1991
+!강퇴3: 1992
+!강퇴4: 1993
+!강퇴5: 1994
+!강퇴6: 1995
+!강퇴7: 1996

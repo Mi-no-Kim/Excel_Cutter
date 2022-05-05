@@ -1,0 +1,65 @@
+[chatEvent]
+__addr__: 0x58D900
+
+셔플!: 2000
+셔플: 2000
+SHUFFLE!: 2000
+shuffle!: 2000
+SHUFFLE: 2000
+shuffle: 2000
+
+라이온: 2001
+LION: 2001
+lion: 2001
+마크로스 프론티어: 2001
+마크로스프론티어: 2001
+마크로스 F: 2001
+마크로스 f: 2001
+마크로스F: 2001
+마크로스f: 2001
+Macross Frontier: 2001
+MACROSS FRONTIER: 2001
+macross frontier: 2001
+MacrossFrontier: 2001
+MACROSSFRONTIER: 2001
+macrossfrontier: 2001
+Macross F: 2001
+MACROSS F: 2001
+macross f: 2001
+MacrossF: 2001
+MACROSSF: 2001
+macrossf: 2001
+
+헬로,월드!: 2002
+Hello,world!: 2002
+HELLO,WORLD!: 2002
+hello,world!: 2002
+Hello world: 2002
+Helloworld: 2002
+혈계전선: 2002
+
+예스터데이: 2003
+Yesterday: 2003
+YESTERDAY: 2003
+yesterday: 2003
+
+쓰르라미 울 적에: 2004
+쓰르라미울적에: 2004
+
+유: 10000
+YOU: 10000
+you: 10000
+헬로 월드: 10001
+헬로월드: 10001
+HELLO WORLD: 10001
+hello world: 10001
+HELLOWORLD: 10001
+helloworld: 10001
+
+!강퇴1: 1990
+!강퇴2: 1991
+!강퇴3: 1992
+!강퇴4: 1993
+!강퇴5: 1994
+!강퇴6: 1995
+!강퇴7: 1996
